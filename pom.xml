@@ -8,7 +8,7 @@
 	<description>${project.artifactId}</description>
 	<url>https://github.com/AvanzaBank/mimer</url>
 	<modules>
-		<module>astrix-config</module>
+		<module>mimer-config</module>
 	</modules>
 	<licenses>
 		<license>
