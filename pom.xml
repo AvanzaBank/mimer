@@ -298,8 +298,8 @@
 						<header>src/license/apache2.txt</header>
 						<properties>
 							<owner>Avanza Bank AB</owner>
-							<inceptionYear>2014</inceptionYear>
-							<project.inceptionYear>2014</project.inceptionYear>
+							<inceptionYear>2020</inceptionYear>
+							<project.inceptionYear>2020</project.inceptionYear>
 						</properties>
 						<mapping>
     						<java>SLASHSTAR_STYLE</java>
