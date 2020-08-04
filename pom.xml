@@ -22,6 +22,15 @@
 		<url>https://github.com/AvanzaBank/</url>
 	</organization>
 
+	<developers>
+		<developer>
+			<name>Elias Lindholm</name>
+			<email>elias.lindholm@avanza.se</email>
+			<organization>Avanza</organization>
+			<organizationUrl>https://github.com/AvanzaBank</organizationUrl>
+		</developer>
+	</developers>
+
 	<scm>
 	  <connection>scm:git:git@github.com:AvanzaBank/mimer.git</connection>
 	  <developerConnection>scm:git:git@github.com:AvanzaBank/mimer.git</developerConnection>
