@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.avanza.mimer</groupId>
 		<artifactId>mimer-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.3</version>
 	</parent>
 	<artifactId>mimer-config</artifactId>
 	<name>${project.artifactId}</name>
