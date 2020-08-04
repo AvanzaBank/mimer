@@ -112,8 +112,8 @@
 		<maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
 		<versions-maven-plugin.version>2.5</versions-maven-plugin.version>
 		<exec-maven-plugin.version>1.2</exec-maven-plugin.version>
-        <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
-        <license-maven-plugin.version>2.11</license-maven-plugin.version>
+		<maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
+		<license-maven-plugin.version>2.11</license-maven-plugin.version>
 		<maven-scm-plugin.version>1.4</maven-scm-plugin.version>
 		<maven-scm-publish-plugin.version>1.1</maven-scm-publish-plugin.version>
 	</properties>
