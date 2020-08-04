@@ -126,6 +126,13 @@
 				<version>${slf4j.version}</version>
 			</dependency>
 
+			<!-- Java 11 back-compatibility -->
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>1.3.2</version>
+			</dependency>
+
 			<!-- TEST -->
 			<dependency>
 				<groupId>junit</groupId>
