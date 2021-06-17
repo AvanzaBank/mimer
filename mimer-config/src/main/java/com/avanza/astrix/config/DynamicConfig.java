@@ -111,6 +111,14 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicIntProperty.class, defaultValue, PropertyParser.INT_PARSER);
 	}
 
+	public DynamicStringListProperty getStringListProperty(String name, List<String> defaultValue) {
+		return getProperty(name, DynamicStringListProperty.class, defaultValue, PropertyParser.STRING_LIST_PARSER);
+	}
+
+	public DynamicIntListProperty getIntListProperty(String name, List<Integer> defaultValue) {
+		return getProperty(name, DynamicIntListProperty.class, defaultValue, PropertyParser.INT_LIST_PARSER);
+	}
+
 	private <T, P extends DynamicProperty<T>> P getProperty(String name, Class<P> propertyType, T defaultValue, PropertyParser<T> propertyParser) {
 		return this.configCache.getInstance(propertyType.getSimpleName() + "." + name, 
 				() -> bindPropertyToConfigurationSources(name, propertyType.newInstance(), defaultValue, propertyParser));

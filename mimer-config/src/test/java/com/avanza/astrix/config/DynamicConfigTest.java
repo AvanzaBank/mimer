@@ -19,12 +19,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 
@@ -85,6 +89,39 @@ public class DynamicConfigTest {
 		assertEquals(1, intProperty.get());
 	}
 	
+	@Test
+	public void stringListProperty() throws Exception {
+		DynamicStringListProperty property = dynamicConfig.getStringListProperty("foo", Collections.emptyList());
+		assertEquals(Collections.emptyList(), property.get());
+		
+		secondSource.set("foo", "1,2,3,4");
+		assertEquals(List.of("1","2","3","4"), property.get());
+		
+		firstSource.set("foo", "1");
+		assertEquals(List.of("1"), property.get());
+
+		firstSource.set("foo", "");
+		assertThat(property.get(), Matchers.hasSize(0));
+	}
+
+	@Test
+	public void intListProperty() throws Exception {
+		DynamicIntListProperty property = dynamicConfig.getIntListProperty("foo", Collections.emptyList());
+		assertEquals(Collections.emptyList(), property.get());
+		
+		secondSource.set("foo", "1, 2    ,3,4,");
+		assertEquals(List.of(1,2,3,4), property.get());
+		
+		firstSource.set("foo", "1");
+		assertEquals(List.of(1), property.get());
+
+		firstSource.set("foo", "");
+		assertThat(property.get(), Matchers.hasSize(0));
+
+		firstSource.set("foo", "unparseable value,2,3,4");
+		assertThat(property.get(), Matchers.hasSize(0));
+	}
+
 	@Test
 	public void unparsableBooleanPropertiesAreIgnored() throws Exception {
 		DynamicBooleanProperty booleanProperty = dynamicConfig.getBooleanProperty("foo", false);

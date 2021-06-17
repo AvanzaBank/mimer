@@ -15,12 +15,19 @@
  */
 package com.avanza.astrix.config;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 interface PropertyParser<T> {
 	
 	public static PropertyParser<Boolean> BOOLEAN_PARSER = new BooleanParser();
 	public static PropertyParser<String> STRING_PARSER = new StringParser();
 	public static PropertyParser<Long> LONG_PARSER = new LongParser();
 	public static PropertyParser<Integer> INT_PARSER = new IntParser();
+	public static PropertyParser<List<String>> STRING_LIST_PARSER = new StringListParser();
+	public static PropertyParser<List<Integer>> INT_LIST_PARSER = new IntListParser();
 
 	T parse(String value);
 	
@@ -55,6 +62,23 @@ interface PropertyParser<T> {
 		@Override
 		public Integer parse(String value) {
 			return Integer.parseInt(value);
+		}
+	}
+
+	class StringListParser implements PropertyParser<List<String>> {
+		@Override
+		public List<String> parse(String value) {
+			return value.isBlank() ? Collections.emptyList() : List.of(value.split(","));
+		}
+	}
+
+	class IntListParser implements PropertyParser<List<Integer>> {
+		@Override
+		public List<Integer> parse(String value) {
+			return value.isBlank() ? Collections.emptyList() : Arrays.stream(value.split(","))
+					.map(String::trim)
+					.map(Integer::parseInt)
+					.collect(Collectors.toList());
 		}
 	}
 }
