@@ -34,9 +34,9 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 	public MapConfigSource() {
 	}
 
-	public static MapConfigSource of(Map<String, ? extends Object> source) {
+	public static MapConfigSource of(Map<String, ?> source) {
 		MapConfigSource configSource = new MapConfigSource();
-		source.entrySet().forEach(e ->configSource.set(e.getKey(), e.getValue().toString()));
+		source.forEach((key, value) -> configSource.set(key, value.toString()));
 		return configSource;
 	}
 	
