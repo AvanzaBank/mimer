@@ -31,6 +31,15 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 	
 	private final ConcurrentMap<String, ListenableStringProperty> propertyValues = new ConcurrentHashMap<>();
 	
+	public MapConfigSource() {
+	}
+
+	public static MapConfigSource of(Map<String, ? extends Object> source) {
+		MapConfigSource configSource = new MapConfigSource();
+		source.entrySet().forEach(e ->configSource.set(e.getKey(), e.getValue().toString()));
+		return configSource;
+	}
+	
 	@Override
 	public String get(String propertyName, DynamicPropertyListener<String> propertyChangeListener) {
 		ListenableStringProperty dynamicProperty = getProperty(propertyName);
