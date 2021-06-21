@@ -32,12 +32,12 @@ import org.junit.Test;
 public class DynamicConfigTest {
 	
 	
-	MapConfigSource firstSource = new MapConfigSource();
-	MapConfigSource secondSource = new MapConfigSource();
-	DynamicConfig dynamicConfig = new DynamicConfig(Arrays.asList(firstSource, secondSource));
+	private final MapConfigSource firstSource = new MapConfigSource();
+	private final MapConfigSource secondSource = new MapConfigSource();
+	private final DynamicConfig dynamicConfig = new DynamicConfig(Arrays.asList(firstSource, secondSource));
 	
 	@Test
-	public void propertyIsResolvedToFirstOccurenceInConfigSources() throws Exception {
+	public void propertyIsResolvedToFirstOccurrenceInConfigSources() throws Exception {
 		DynamicStringProperty stringProperty = dynamicConfig.getStringProperty("foo", "defaultFoo");
 		
 		secondSource.set("foo", "secondValue");
@@ -84,7 +84,24 @@ public class DynamicConfigTest {
 		firstSource.set("foo", "1");
 		assertEquals(1, intProperty.get());
 	}
-	
+
+	@Test
+	public void enumProperty() {
+		DynamicProperty<MyEnum> enumProperty = dynamicConfig.getEnumProperty("myEnum", MyEnum.class, MyEnum.FIRST);
+
+		assertEquals(MyEnum.FIRST, enumProperty.getCurrentValue());
+
+		secondSource.set("myEnum", "SECOND");
+		assertEquals(MyEnum.SECOND, enumProperty.getCurrentValue());
+
+		firstSource.set("myEnum", "third");
+		assertEquals(MyEnum.THIRD, enumProperty.getCurrentValue());
+
+		firstSource.set("myEnum", "MALFORMED");
+		assertEquals(MyEnum.THIRD, enumProperty.getCurrentValue());
+	}
+
+
 	@Test
 	public void unparsableBooleanPropertiesAreIgnored() throws Exception {
 		DynamicBooleanProperty booleanProperty = dynamicConfig.getBooleanProperty("foo", false);
@@ -220,8 +237,8 @@ public class DynamicConfigTest {
 	@Test
 	public void globalConfigListenerSupport_PropertyCreatedEvents() throws Exception {
 		class Prop {
-			String name;
-			Object val;
+			final String name;
+			final Object val;
 			public Prop(String name, Object val) {
 				this.name = name;
 				this.val = val;
@@ -257,8 +274,8 @@ public class DynamicConfigTest {
 	@Test
 	public void globalConfigListenerSupport_PropertyUpdateEvents() throws Exception {
 		class Prop {
-			String name;
-			Object val;
+			final String name;
+			final Object val;
 			public Prop(String name, Object val) {
 				this.name = name;
 				this.val = val;
@@ -297,7 +314,9 @@ public class DynamicConfigTest {
 	}
 	
 	
-
+	private enum MyEnum {
+		FIRST, SECOND, THIRD
+	}
 	
 
 }

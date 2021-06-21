@@ -15,12 +15,18 @@
  */
 package com.avanza.astrix.config;
 
+import java.util.Arrays;
+
 interface PropertyParser<T> {
 	
-	public static PropertyParser<Boolean> BOOLEAN_PARSER = new BooleanParser();
-	public static PropertyParser<String> STRING_PARSER = new StringParser();
-	public static PropertyParser<Long> LONG_PARSER = new LongParser();
-	public static PropertyParser<Integer> INT_PARSER = new IntParser();
+	PropertyParser<Boolean> BOOLEAN_PARSER = new BooleanParser();
+	PropertyParser<String> STRING_PARSER = new StringParser();
+	PropertyParser<Long> LONG_PARSER = new LongParser();
+	PropertyParser<Integer> INT_PARSER = new IntParser();
+
+	static <T extends Enum<T>> PropertyParser<T> enumParser(Class<T> enumClass) {
+		return new EnumParser<>(enumClass);
+	}
 
 	T parse(String value);
 	
@@ -47,14 +53,30 @@ interface PropertyParser<T> {
 	class LongParser implements PropertyParser<Long> {
 		@Override
 		public Long parse(String value) {
-			return Long.parseLong(value);
+			return Long.valueOf(value);
 		}
 	}
 	
 	class IntParser implements PropertyParser<Integer> {
 		@Override
 		public Integer parse(String value) {
-			return Integer.parseInt(value);
+			return Integer.valueOf(value);
+		}
+	}
+
+	class EnumParser<T extends Enum<T>> implements PropertyParser<T> {
+		private final Class<T> enumClass;
+
+		public EnumParser(Class<T> enumClass) {
+			this.enumClass = enumClass;
+		}
+
+		@Override
+		public T parse(String value) {
+			return Arrays.stream(enumClass.getEnumConstants())
+					.filter(it -> it.name().equalsIgnoreCase(value))
+					.findFirst()
+					.orElseThrow(() -> new IllegalArgumentException("Unknown " + enumClass.getSimpleName() + " value " + value));
 		}
 	}
 }

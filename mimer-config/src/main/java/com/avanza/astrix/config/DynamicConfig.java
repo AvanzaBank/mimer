@@ -111,9 +111,14 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicIntProperty.class, defaultValue, PropertyParser.INT_PARSER);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends Enum<T>> DynamicEnumProperty<T> getEnumProperty(String name, Class<T> enumClass, T defaultValue) {
+		return getProperty(name, DynamicEnumProperty.class, defaultValue, PropertyParser.enumParser(enumClass));
+	}
+
 	private <T, P extends DynamicProperty<T>> P getProperty(String name, Class<P> propertyType, T defaultValue, PropertyParser<T> propertyParser) {
 		return this.configCache.getInstance(propertyType.getSimpleName() + "." + name, 
-				() -> bindPropertyToConfigurationSources(name, propertyType.newInstance(), defaultValue, propertyParser));
+				() -> bindPropertyToConfigurationSources(name, propertyType.getDeclaredConstructor().newInstance(), defaultValue, propertyParser));
 	}
 
 	private <T, P extends DynamicProperty<T>> P bindPropertyToConfigurationSources(String name, P property, T defaultValue, PropertyParser<T> propertyParser) {
