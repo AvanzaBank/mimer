@@ -15,11 +15,10 @@
  */
 	package com.avanza.astrix.config;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Map backed {@link DynamicConfigSource} useful in testing. <p> 
@@ -44,33 +43,35 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 	
 	@Override
 	public <T> void set(Setting<T> setting, T value) {
-		String stringRepresentation = value != null ? value.toString() : null;
-		getProperty(setting.name()).set(stringRepresentation);
+		set(setting.name(), value == null ? null : value.toString());
 	}
-	
+
+	@Override
+	public void set(IntSetting setting, int value) {
+		set(setting.name(), Integer.toString(value));
+	}
+
 	@Override
 	public void set(LongSetting setting, long value) {
-		getProperty(setting.name()).set(Long.toString(value));
+		set(setting.name(), Long.toString(value));
 	}
-	
+
 	@Override
 	public void set(BooleanSetting setting, boolean value) {
-		getProperty(setting.name()).set(Boolean.toString(value));
+		set(setting.name(), Boolean.toString(value));
 	}
-	
+
+	@Override
+	public <T extends Enum<T>> void set(EnumSetting<T> setting, T value) {
+		set(setting.name(), value == null ? null : value.name());
+	}
+
 	private ListenableStringProperty getProperty(String propertyName) {
-		ListenableStringProperty result = propertyValues.get(propertyName);
-		if (result != null) {
-			return result;
-		}
-		propertyValues.putIfAbsent(propertyName, new ListenableStringProperty());
-		return propertyValues.get(propertyName);
+		return propertyValues.computeIfAbsent(propertyName, key -> new ListenableStringProperty());
 	}
 
 	public void setAll(MapConfigSource config) {
-		for (Map.Entry<String, ListenableStringProperty> entry : config.propertyValues.entrySet()) {
-			set(entry.getKey(), entry.getValue().value);
-		}
+		config.propertyValues.forEach((key, value) -> set(key, value.value));
 	}
 	
 	@Override
@@ -80,13 +81,11 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 
 	private static class ListenableStringProperty {
 		
-		final List<DynamicPropertyListener<String>> listeners = new CopyOnWriteArrayList<>();
-		volatile String value;
+		private final Queue<DynamicPropertyListener<String>> listeners = new ConcurrentLinkedQueue<>();
+		private volatile String value;
 		
 		void propertyChanged(String newValue) {
-			for (DynamicPropertyListener<String> l : listeners) {
-				l.propertyChanged(newValue);
-			}
+			listeners.forEach(l -> l.propertyChanged(newValue));
 		}
 
 		void set(String value) {

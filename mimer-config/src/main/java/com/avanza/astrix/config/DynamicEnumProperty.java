@@ -17,7 +17,7 @@ public class DynamicEnumProperty<T extends Enum<T>> implements DynamicProperty<T
 
 	@Override
 	public String toString() {
-		return String.valueOf(value);
+		return value == null? null : value.name();
 	}
 
 	@Override

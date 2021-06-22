@@ -15,28 +15,30 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Objects.requireNonNull;
+
 /**
- * A Setting of int type, see {@link Setting} <p>
- * 
- * @author "Elias Lindholm"
+ * A Setting of Enum type, see {@link Setting} <p>
  */
-public class IntSetting implements Setting<Integer> {
-	
+public class EnumSetting<T extends Enum<T>> implements Setting<T> {
+
 	private final String name;
-	private final int defaultValue;
-	
-	private IntSetting(String name, int defaultValue) {
-		this.name = name;
+	private final Class<T> enumType;
+	private final T defaultValue;
+
+	public EnumSetting(String name, Class<T> enumType, T defaultValue) {
+		this.name = requireNonNull(name);
+		this.enumType = requireNonNull(enumType);
 		this.defaultValue = defaultValue;
 	}
 
-	public static IntSetting create(String name, int defaultValue) {
-		return new IntSetting(name, defaultValue);
+	public static <T extends Enum<T>> EnumSetting<T> create(String name, Class<T> enumType, T defaultValue) {
+		return new EnumSetting<>(name, enumType, defaultValue);
 	}
-
+	
 	@Override
-	public DynamicIntProperty getFrom(DynamicConfig config) {
-		return config.getIntProperty(name, defaultValue);
+	public DynamicEnumProperty<T> getFrom(DynamicConfig config) {
+		return config.getEnumProperty(name, enumType, defaultValue);
 	}
 
 	@Override
@@ -44,8 +46,9 @@ public class IntSetting implements Setting<Integer> {
 		return name;
 	}
 	
-	public Integer defaultValue() {
-		return this.defaultValue;
+	@Override
+	public T defaultValue() {
+		return defaultValue;
 	}
 
 }

@@ -17,12 +17,12 @@ package com.avanza.astrix.config;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -63,25 +63,23 @@ final class ObjectCache {
 	}
 
 	public static void destroy(Object object) {
-		List<Method> methods = getMethodsAnnotatedWith(object.getClass(), PreDestroy.class);
-		for (Method m : methods) {
+		getMethodsAnnotatedWith(object.getClass(), PreDestroy.class).forEach(m -> {
 			try {
 				m.invoke(object);
 			} catch (Exception e) {
 				logger.error(String.format("Failed to invoke destroy method. methodName=%s objectType=%s", m.getName(), object.getClass().getName()), e);
 			}
-		}
+		});
 	}
 	
 	public static void init(Object object) {
-		List<Method> methods = getMethodsAnnotatedWith(object.getClass(), PostConstruct.class);
-		for (Method m : methods) {
+		getMethodsAnnotatedWith(object.getClass(), PostConstruct.class).forEach(m -> {
 			try {
 				m.invoke(object);
 			} catch (Exception e) {
 				logger.error(String.format("Failed to invoke init method. methodName=%s objectType=%s", m.getName(), object.getClass().getName()), e);
 			}
-		}
+		});
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -122,26 +120,16 @@ final class ObjectCache {
 	}
 	
 	public <T> T create(Object id, final T instance) {
-		return create(id, new ObjectFactory<T>() {
-			@Override
-			public T create() throws Exception {
-				return instance;
-			}
-		});
+		return create(id, () -> instance);
 	}
 	
 	public interface ObjectFactory<T> {
 		T create() throws Exception;
 	}
 	
-	private static List<Method> getMethodsAnnotatedWith(final Class<?> type, final Class<? extends Annotation> annotation) {
-	    final List<Method> methods = new ArrayList<Method>();
-	    for (Method method : type.getMethods()) { 
-            if (method.isAnnotationPresent(annotation)) {
-                methods.add(method);
-            }
-	    }
-	    return methods;
+	private static Stream<Method> getMethodsAnnotatedWith(final Class<?> type, final Class<? extends Annotation> annotation) {
+	    return Arrays.stream(type.getMethods())
+				.filter(method -> method.isAnnotationPresent(annotation));
 	}
 	
 }

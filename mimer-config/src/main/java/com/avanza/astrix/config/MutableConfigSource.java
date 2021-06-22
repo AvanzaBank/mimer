@@ -22,11 +22,23 @@ package com.avanza.astrix.config;
  *
  */
 public interface MutableConfigSource {
-	
+
 	<T> void set(Setting<T> setting, T value);
-	
-	void set(LongSetting setting, long value);
-	
-	void set(BooleanSetting setting, boolean value);
-	
+
+	default void set(IntSetting setting, int value) {
+		set((Setting<Integer>) setting, value);
+	}
+
+	default void set(LongSetting setting, long value) {
+		set((Setting<Long>) setting, value);
+	}
+
+	default void set(BooleanSetting setting, boolean value) {
+		set((Setting<Boolean>) setting, value);
+	}
+
+	default <T extends Enum<T>> void set(EnumSetting<T> setting, T value) {
+		set((Setting<T>) setting, value);
+	}
+
 }
