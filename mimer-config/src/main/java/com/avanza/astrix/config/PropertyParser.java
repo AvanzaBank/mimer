@@ -15,16 +15,9 @@
  */
 package com.avanza.astrix.config;
 
-import static java.lang.String.CASE_INSENSITIVE_ORDER;
-import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Function;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 interface PropertyParser<T> {
 	
@@ -75,26 +68,17 @@ interface PropertyParser<T> {
 
 	class EnumParser<T extends Enum<T>> implements PropertyParser<T> {
 		private final Class<T> enumClass;
-		private final Map<String, T> caseInsensitiveValues;
 
 		public EnumParser(Class<T> enumClass) {
-			this.enumClass = enumClass;
-			this.caseInsensitiveValues = Arrays.stream(enumClass.getEnumConstants())
-					.collect(collectingAndThen(toCaseInsensitiveMap(T::name), Collections::unmodifiableMap));
+			this.enumClass = requireNonNull(enumClass);
 		}
 
 		@Override
 		public T parse(String value) {
-			T enumValue = caseInsensitiveValues.get(value);
-			if (enumValue == null) {
-				throw new IllegalArgumentException("Unknown " + enumClass.getSimpleName() + " value " + value);
-			} else {
-				return enumValue;
-			}
-		}
-
-		private Collector<T, ?, Map<String, T>> toCaseInsensitiveMap(Function<T, String> keyMapper) {
-			return Collectors.toMap(keyMapper, Function.identity(), (a, b) -> a, () -> new TreeMap<>(CASE_INSENSITIVE_ORDER));
+			return Arrays.stream(enumClass.getEnumConstants())
+					.filter(it -> it.name().equalsIgnoreCase(value))
+					.findFirst()
+					.orElseThrow(() -> new IllegalArgumentException("Unknown " + enumClass.getSimpleName() + " value " + value));
 		}
 	}
 }
