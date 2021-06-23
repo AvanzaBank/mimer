@@ -79,7 +79,7 @@ interface PropertyParser<T> {
 		public List<Integer> parse(String value) {
 			return value.isBlank() ? Collections.emptyList() : Arrays.stream(value.split(","))
 					.map(String::trim)
-					.map(Integer::parseInt)
+					.map(Integer::valueOf)
 					.collect(Collectors.toList());
 		}
 	}
