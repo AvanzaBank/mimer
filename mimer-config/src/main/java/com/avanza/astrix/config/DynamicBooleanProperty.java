@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 package com.avanza.astrix.config;
+
+import java.util.function.BooleanSupplier;
+
 /**
  * DynamicProperty of boolean type, see {@link DynamicProperty}. <p>
  * 
  * @author Elias Lindholm (elilin)
  *
  */
-public final class DynamicBooleanProperty implements DynamicProperty<Boolean> {
+public final class DynamicBooleanProperty implements DynamicProperty<Boolean>, BooleanSupplier {
 	
 	private final ListenerSupport<DynamicPropertyListener<Boolean>> listenerSupport = new ListenerSupport<>();
 	private volatile boolean value;
@@ -38,6 +41,11 @@ public final class DynamicBooleanProperty implements DynamicProperty<Boolean> {
 	}
 	
 	public boolean get() {
+		return value;
+	}
+
+	@Override
+	public boolean getAsBoolean() {
 		return value;
 	}
 	
@@ -65,5 +73,4 @@ public final class DynamicBooleanProperty implements DynamicProperty<Boolean> {
 	public void removeListener(DynamicPropertyListener<Boolean> listener) {
 		listenerSupport.removeListener(listener);
 	}
-	
 }

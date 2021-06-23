@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 package com.avanza.astrix.config;
+
+import java.util.function.LongSupplier;
+
 /**
  * DynamicProperty of int type, see {@link DynamicProperty}. <p>
  *  
  * @author Elias Lindholm (elilin)
  *
  */
-public final class DynamicLongProperty implements DynamicProperty<Long> {
+public final class DynamicLongProperty implements DynamicProperty<Long>, LongSupplier {
 
 	private final ListenerSupport<DynamicPropertyListener<Long>> listenerSupport = new ListenerSupport<>();
 	private volatile long value;
@@ -38,6 +41,11 @@ public final class DynamicLongProperty implements DynamicProperty<Long> {
 	}
 	
 	public long get() {
+		return value;
+	}
+
+	@Override
+	public long getAsLong() {
 		return value;
 	}
 	

@@ -15,6 +15,7 @@
  */
 package com.avanza.astrix.config;
 
+import java.util.function.Supplier;
 
 /**
  * DynamicProperty of String type, see {@link DynamicProperty}. <p>
@@ -22,7 +23,7 @@ package com.avanza.astrix.config;
  * @author Elias Lindholm (elilin)
  *
  */
-public final class DynamicStringProperty implements DynamicProperty<String> {
+public final class DynamicStringProperty implements DynamicProperty<String>, Supplier<String> {
 
 	private final ListenerSupport<DynamicPropertyListener<String>> listenerSupport = new ListenerSupport<>();
 	private volatile String value;
@@ -39,7 +40,8 @@ public final class DynamicStringProperty implements DynamicProperty<String> {
 	public String getCurrentValue() {
 		return this.value;
 	}
-	
+
+	@Override
 	public String get() {
 		return this.value;
 	}
