@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 interface PropertyParser<T> {
-	
+
 	public static PropertyParser<Boolean> BOOLEAN_PARSER = new BooleanParser();
 	public static PropertyParser<String> STRING_PARSER = new StringParser();
 	public static PropertyParser<Long> LONG_PARSER = new LongParser();
@@ -30,7 +30,7 @@ interface PropertyParser<T> {
 	public static PropertyParser<List<Integer>> INT_LIST_PARSER = new IntListParser();
 
 	T parse(String value);
-	
+
 	class BooleanParser implements PropertyParser<Boolean> {
 		@Override
 		public Boolean parse(String value) {
@@ -43,7 +43,7 @@ interface PropertyParser<T> {
 			throw new IllegalArgumentException("Cannot parse boolean value: \"" + value + "\"");
 		}
 	};
-	
+
 	class StringParser implements PropertyParser<String> {
 		@Override
 		public String parse(String value) {
@@ -57,7 +57,7 @@ interface PropertyParser<T> {
 			return Long.parseLong(value);
 		}
 	}
-	
+
 	class IntParser implements PropertyParser<Integer> {
 		@Override
 		public Integer parse(String value) {
@@ -68,7 +68,8 @@ interface PropertyParser<T> {
 	class StringListParser implements PropertyParser<List<String>> {
 		@Override
 		public List<String> parse(String value) {
-			return value.isBlank() ? Collections.emptyList() : Arrays.stream(value.split(","))
+			return nullOrEmpty(value) ? Collections.emptyList()
+					: Arrays.stream(value.split(","))
 					.map(String::trim)
 					.collect(Collectors.toList());
 		}
@@ -77,10 +78,16 @@ interface PropertyParser<T> {
 	class IntListParser implements PropertyParser<List<Integer>> {
 		@Override
 		public List<Integer> parse(String value) {
-			return value.isBlank() ? Collections.emptyList() : Arrays.stream(value.split(","))
+			return nullOrEmpty(value) ? Collections.emptyList()
+					: Arrays.stream(value.split(","))
 					.map(String::trim)
 					.map(Integer::valueOf)
 					.collect(Collectors.toList());
 		}
+
+	}
+
+	static boolean nullOrEmpty(String value) {
+		return value == null || value.trim().isEmpty();
 	}
 }
