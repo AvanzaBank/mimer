@@ -15,14 +15,21 @@
  */
 package com.avanza.astrix.config;
 
-import static java.util.Objects.requireNonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Objects.requireNonNull;
+
+/**
+ *
+ * @author Elias Lindholm (elilin)
+ *
+ * @param <T>
+ */
 final class ListenerSupport<T> {
 	
 	private static final Logger log = LoggerFactory.getLogger(ListenerSupport.class);
