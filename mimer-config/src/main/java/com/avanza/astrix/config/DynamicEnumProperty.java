@@ -1,8 +1,15 @@
 package com.avanza.astrix.config;
 
-public class DynamicEnumProperty<T extends Enum<T>> implements DynamicProperty<T> {
+import java.util.function.Supplier;
+
+public class DynamicEnumProperty<T extends Enum<T>> implements DynamicProperty<T>, Supplier<T> {
 	private final ListenerSupport<DynamicPropertyListener<T>> listenerSupport = new ListenerSupport<>();
 	private volatile T value;
+
+	@Override
+	public T get() {
+		return value;
+	}
 
 	@Override
 	public T getCurrentValue() {
