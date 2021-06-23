@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 package com.avanza.astrix.config;
+
+import java.util.function.IntSupplier;
+
 /**
  * DynamicProperty of int type, see {@link DynamicProperty}. <p>
  * 
  * @author Elias Lindholm (elilin)
  *
  */
-public final class DynamicIntProperty implements DynamicProperty<Integer> {
+public final class DynamicIntProperty implements DynamicProperty<Integer>, IntSupplier {
 
 	private final ListenerSupport<DynamicPropertyListener<Integer>> listenerSupport = new ListenerSupport<>();
 	private volatile int value;
@@ -38,6 +41,11 @@ public final class DynamicIntProperty implements DynamicProperty<Integer> {
 	}
 	
 	public int get() {
+		return value;
+	}
+
+	@Override
+	public int getAsInt() {
 		return value;
 	}
 	
