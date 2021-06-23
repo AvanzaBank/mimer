@@ -15,63 +15,21 @@
  */
 package com.avanza.astrix.config;
 
-import static java.util.stream.Collectors.joining;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * DynamicProperty of List<Integer> type, see {@link DynamicProperty}. <p>
  * 
  * Property values are parsed as a comma separated string of integers
  */
-public final class DynamicIntListProperty implements DynamicProperty<List<Integer>>, Supplier<List<Integer>>{
+public final class DynamicIntListProperty extends ListProperty<Integer> {
 
-	private final ListenerSupport<DynamicPropertyListener<List<Integer>>> listenerSupport = new ListenerSupport<>();
-	private volatile List<Integer> value;
-	
-	public DynamicIntListProperty(List<Integer> initialValue) {
-		this.value = initialValue;
-	}
-	
 	public DynamicIntListProperty() {
-		this.value = Collections.emptyList();
-	}
-	
-	@Override
-	public List<Integer> getCurrentValue() {
-		return this.value;
-	}
-	
-	@Override
-	public List<Integer> get() {
-		return this.value;
-	}
-	
-	public void set(List<Integer> value) {
-		this.value = value;
-		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(value));
-	}
-	
-	@Override
-	public void setValue(List<Integer> value) {
-		set(value);
-	}
-	
-	@Override
-	public String toString() {
-		return this.value.stream().map(String::valueOf).collect(joining(","));
+		super();
 	}
 
-	@Override
-	public void addListener(DynamicPropertyListener<List<Integer>> listener) {
-		listenerSupport.addListener(listener);
+	public DynamicIntListProperty(List<Integer> initialValue) {
+		super(initialValue);
 	}
 
-	@Override
-	public void removeListener(DynamicPropertyListener<List<Integer>> listener) {
-		listenerSupport.removeListener(listener);
-	}
-	
 }

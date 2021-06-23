@@ -18,6 +18,7 @@ package com.avanza.astrix.config;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 interface PropertyParser<T> {
@@ -26,8 +27,10 @@ interface PropertyParser<T> {
 	public static PropertyParser<String> STRING_PARSER = new StringParser();
 	public static PropertyParser<Long> LONG_PARSER = new LongParser();
 	public static PropertyParser<Integer> INT_PARSER = new IntParser();
-	public static PropertyParser<List<String>> STRING_LIST_PARSER = new StringListParser();
-	public static PropertyParser<List<Integer>> INT_LIST_PARSER = new IntListParser();
+	public static PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(Function.identity());
+	public static PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(Integer::parseInt);
+	public static PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long::parseLong);
+	public static PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean::parseBoolean);
 
 	T parse(String value);
 
@@ -65,29 +68,23 @@ interface PropertyParser<T> {
 		}
 	}
 
-	class StringListParser implements PropertyParser<List<String>> {
-		@Override
-		public List<String> parse(String value) {
-			return nullOrEmpty(value) ? Collections.emptyList()
-					: Arrays.stream(value.split(","))
-					.map(String::trim)
-					.collect(Collectors.toList());
-		}
-	}
+	class ListParser<T> implements PropertyParser<List<T>> {
 
-	class IntListParser implements PropertyParser<List<Integer>> {
+		private Function<String, T> singleValueParser;
+
+		ListParser(Function<String, T> singleValueParser) {
+			this.singleValueParser = singleValueParser;
+		}
+
 		@Override
-		public List<Integer> parse(String value) {
-			return nullOrEmpty(value) ? Collections.emptyList()
+		public List<T> parse(String value) {
+			return value == null || value.trim().isEmpty() ? Collections.emptyList()
 					: Arrays.stream(value.split(","))
 					.map(String::trim)
-					.map(Integer::valueOf)
+					.map(singleValueParser::apply)
 					.collect(Collectors.toList());
 		}
 
 	}
 
-	static boolean nullOrEmpty(String value) {
-		return value == null || value.trim().isEmpty();
-	}
 }

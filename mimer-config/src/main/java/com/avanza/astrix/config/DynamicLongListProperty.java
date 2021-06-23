@@ -18,20 +18,19 @@ package com.avanza.astrix.config;
 import java.util.List;
 
 /**
- * DynamicProperty of List<String> type, see {@link DynamicProperty}. <p>
+ * DynamicProperty of List<Long> type, see {@link DynamicProperty}.
+ * <p>
  * 
- * Property values are parsed as a comma separated string
- *
+ * Property values are parsed as a comma separated string of Longs
  */
-public final class DynamicStringListProperty extends ListProperty<String> {
+public final class DynamicLongListProperty extends ListProperty<Long> {
 
-	public DynamicStringListProperty() {
+	public DynamicLongListProperty() {
 		super();
 	}
 
-	public DynamicStringListProperty(List<String> initialValue) {
+	public DynamicLongListProperty(List<Long> initialValue) {
 		super(initialValue);
 	}
-
 
 }

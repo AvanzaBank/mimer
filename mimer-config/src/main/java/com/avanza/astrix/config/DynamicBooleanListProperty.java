@@ -18,20 +18,19 @@ package com.avanza.astrix.config;
 import java.util.List;
 
 /**
- * DynamicProperty of List<String> type, see {@link DynamicProperty}. <p>
+ * DynamicProperty of List<Boolean> type, see {@link DynamicProperty}.
+ * <p>
  * 
- * Property values are parsed as a comma separated string
- *
+ * Property values are parsed as a comma separated string of Booleans
  */
-public final class DynamicStringListProperty extends ListProperty<String> {
+public final class DynamicBooleanListProperty extends ListProperty<Boolean> {
 
-	public DynamicStringListProperty() {
+	public DynamicBooleanListProperty() {
 		super();
 	}
 
-	public DynamicStringListProperty(List<String> initialValue) {
+	public DynamicBooleanListProperty(List<Boolean> initialValue) {
 		super(initialValue);
 	}
-
 
 }
