@@ -19,45 +19,47 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * DynamicProperty of List<String> type, see {@link DynamicProperty}. <p>
  * 
- * Property values are parsed as a comma separated string 
+ * Property values are parsed as a comma separated string
  *
  */
-public final class DynamicStringListProperty implements DynamicProperty<List<String>> {
+public final class DynamicStringListProperty implements DynamicProperty<List<String>>, Supplier<List<String>> {
 
 	private final ListenerSupport<DynamicPropertyListener<List<String>>> listenerSupport = new ListenerSupport<>();
 	private volatile List<String> value;
-	
+
 	public DynamicStringListProperty(List<String> initialValue) {
 		this.value = initialValue;
 	}
-	
+
 	public DynamicStringListProperty() {
 		this.value = Collections.emptyList();
 	}
-	
+
 	@Override
 	public List<String> getCurrentValue() {
 		return this.value;
 	}
-	
+
+	@Override
 	public List<String> get() {
 		return this.value;
 	}
-	
+
 	public void set(List<String> value) {
 		this.value = value;
 		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(value));
 	}
-	
+
 	@Override
 	public void setValue(List<String> value) {
 		set(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.value.stream().collect(joining(","));
@@ -72,5 +74,5 @@ public final class DynamicStringListProperty implements DynamicProperty<List<Str
 	public void removeListener(DynamicPropertyListener<List<String>> listener) {
 		listenerSupport.removeListener(listener);
 	}
-	
+
 }

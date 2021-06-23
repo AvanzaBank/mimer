@@ -19,13 +19,14 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * DynamicProperty of List<Integer> type, see {@link DynamicProperty}. <p>
  * 
  * Property values are parsed as a comma separated string of integers
  */
-public final class DynamicIntListProperty implements DynamicProperty<List<Integer>> {
+public final class DynamicIntListProperty implements DynamicProperty<List<Integer>>, Supplier<List<Integer>>{
 
 	private final ListenerSupport<DynamicPropertyListener<List<Integer>>> listenerSupport = new ListenerSupport<>();
 	private volatile List<Integer> value;
@@ -43,6 +44,7 @@ public final class DynamicIntListProperty implements DynamicProperty<List<Intege
 		return this.value;
 	}
 	
+	@Override
 	public List<Integer> get() {
 		return this.value;
 	}
