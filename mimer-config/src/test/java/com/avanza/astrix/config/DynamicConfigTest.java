@@ -94,7 +94,7 @@ public class DynamicConfigTest {
 		DynamicStringListProperty property = dynamicConfig.getStringListProperty("foo", Collections.emptyList());
 		assertEquals(Collections.emptyList(), property.get());
 		
-		secondSource.set("foo", "1,2,3,4");
+		secondSource.set("foo", "1,2,   3   ,4");
 		assertEquals(List.of("1","2","3","4"), property.get());
 		
 		firstSource.set("foo", "1");

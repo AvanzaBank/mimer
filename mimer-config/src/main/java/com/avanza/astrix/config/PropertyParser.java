@@ -68,7 +68,9 @@ interface PropertyParser<T> {
 	class StringListParser implements PropertyParser<List<String>> {
 		@Override
 		public List<String> parse(String value) {
-			return value.isBlank() ? Collections.emptyList() : List.of(value.split(","));
+			return value.isBlank() ? Collections.emptyList() : Arrays.stream(value.split(","))
+					.map(String::trim)
+					.collect(Collectors.toList());
 		}
 	}
 
