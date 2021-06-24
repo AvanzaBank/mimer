@@ -24,14 +24,14 @@ import java.util.function.Supplier;
 public class ListProperty<T> implements DynamicProperty<List<T>>, Supplier<List<T>> {
 
 	private final ListenerSupport<DynamicPropertyListener<List<T>>> listenerSupport = new ListenerSupport<>();
-	protected volatile List<T> value;
+	private volatile List<T> value;
 
 	public ListProperty() {
-		this.value = Collections.emptyList();
+		this(Collections.emptyList());
 	}
 
 	public ListProperty(List<T> initialValue) {
-		this.value = initialValue;
+		this.value = Collections.unmodifiableList(initialValue);
 	}
 
 	@Override
@@ -41,12 +41,12 @@ public class ListProperty<T> implements DynamicProperty<List<T>>, Supplier<List<
 
 	@Override
 	public List<T> get() {
-		return Collections.unmodifiableList(this.value);
+		return this.value;
 	}
 
 	public void set(List<T> value) {
-		this.value = value;
-		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(value));
+		this.value = Collections.unmodifiableList(value);
+		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(this.value));
 	}
 
 	@Override
