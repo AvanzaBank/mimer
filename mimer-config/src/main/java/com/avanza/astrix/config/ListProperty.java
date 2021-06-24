@@ -15,58 +15,58 @@
  */
 package com.avanza.astrix.config;
 
- import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.joining;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
- public class ListProperty<T> implements DynamicProperty<List<T>>, Supplier<List<T>> {
+public class ListProperty<T> implements DynamicProperty<List<T>>, Supplier<List<T>> {
 
-	 private final ListenerSupport<DynamicPropertyListener<List<T>>> listenerSupport = new ListenerSupport<>();
-	 protected volatile List<T> value;
+	private final ListenerSupport<DynamicPropertyListener<List<T>>> listenerSupport = new ListenerSupport<>();
+	protected volatile List<T> value;
 
-	 public ListProperty() {
-		 this.value = Collections.emptyList();
-	 }
+	public ListProperty() {
+		this.value = Collections.emptyList();
+	}
 
-	 public ListProperty(List<T> initialValue) {
-		 this.value = initialValue;
-	 }
+	public ListProperty(List<T> initialValue) {
+		this.value = initialValue;
+	}
 
-	 @Override
-	 public List<T> getCurrentValue() {
-		 return this.value;
-	 }
+	@Override
+	public List<T> getCurrentValue() {
+		return get();
+	}
 
-	 @Override
-	 public List<T> get() {
-		 return this.value;
-	 }
+	@Override
+	public List<T> get() {
+		return Collections.unmodifiableList(this.value);
+	}
 
-	 public void set(List<T> value) {
-		 this.value = value;
-		 this.listenerSupport.dispatchEvent(l -> l.propertyChanged(value));
-	 }
+	public void set(List<T> value) {
+		this.value = value;
+		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(value));
+	}
 
-	 @Override
-	 public void setValue(List<T> value) {
-		 set(value);
-	 }
+	@Override
+	public void setValue(List<T> value) {
+		set(value);
+	}
 
-	 @Override
-	 public String toString() {
-		 return this.value.stream().map(String::valueOf).collect(joining(","));
-	 }
+	@Override
+	public String toString() {
+		return this.value.stream().map(String::valueOf).collect(joining(","));
+	}
 
-	 @Override
-	 public void addListener(DynamicPropertyListener<List<T>> listener) {
-		 listenerSupport.addListener(listener);
-	 }
+	@Override
+	public void addListener(DynamicPropertyListener<List<T>> listener) {
+		listenerSupport.addListener(listener);
+	}
 
-	 @Override
-	 public void removeListener(DynamicPropertyListener<List<T>> listener) {
-		 listenerSupport.removeListener(listener);
-	 }
+	@Override
+	public void removeListener(DynamicPropertyListener<List<T>> listener) {
+		listenerSupport.removeListener(listener);
+	}
 
- }
+}
