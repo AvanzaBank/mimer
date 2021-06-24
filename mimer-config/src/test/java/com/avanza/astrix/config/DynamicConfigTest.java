@@ -15,16 +15,15 @@
  */
 package com.avanza.astrix.config;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -95,10 +94,10 @@ public class DynamicConfigTest {
 		assertEquals(Collections.emptyList(), property.get());
 
 		secondSource.set("foo", "1,2,   3   ,4");
-		assertEquals(List.of("1","2","3","4"), property.get());
+		assertEquals(Arrays.asList("1", "2", "3", "4"), property.get());
 
 		firstSource.set("foo", "1");
-		assertEquals(List.of("1"), property.get());
+		assertEquals(Arrays.asList("1"), property.get());
 
 		firstSource.set("foo", "");
 		assertThat(property.get(), Matchers.hasSize(0));
@@ -110,10 +109,10 @@ public class DynamicConfigTest {
 		assertEquals(Collections.emptyList(), property.get());
 
 		secondSource.set("foo", "1, 2    ,3,4,");
-		assertEquals(List.of(1,2,3,4), property.get());
+		assertEquals(Arrays.asList(1, 2, 3, 4), property.get());
 
 		firstSource.set("foo", "1");
-		assertEquals(List.of(1), property.get());
+		assertEquals(Arrays.asList(1), property.get());
 
 		firstSource.set("foo", "");
 		assertThat(property.get(), Matchers.hasSize(0));
@@ -128,10 +127,10 @@ public class DynamicConfigTest {
 		assertEquals(Collections.emptyList(), property.get());
 
 		secondSource.set("foo", "1, 2    ,3,4,");
-		assertEquals(List.of(1L, 2L, 3L, 4L), property.get());
+		assertEquals(Arrays.asList(1L, 2L, 3L, 4L), property.get());
 
 		firstSource.set("foo", "1");
-		assertEquals(List.of(1L), property.get());
+		assertEquals(Arrays.asList(1L), property.get());
 
 		firstSource.set("foo", "");
 		assertThat(property.get(), Matchers.hasSize(0));
@@ -146,16 +145,16 @@ public class DynamicConfigTest {
 		assertEquals(Collections.emptyList(), property.get());
 
 		secondSource.set("foo", "true, false,  false, TRUE");
-		assertEquals(List.of(true, false, false, true), property.get());
+		assertEquals(Arrays.asList(true, false, false, true), property.get());
 
 		firstSource.set("foo", "true");
-		assertEquals(List.of(true), property.get());
+		assertEquals(Arrays.asList(true), property.get());
 
 		firstSource.set("foo", "");
 		assertThat(property.get(), Matchers.hasSize(0));
 
 		firstSource.set("foo", "unparseable value,false, true");
-		assertEquals(List.of(false, false, true), property.get());
+		assertEquals(Arrays.asList(false, false, true), property.get());
 	}
 
 	@Test
