@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-	package com.avanza.astrix.config;
+package com.avanza.astrix.config;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,26 +21,34 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Map backed {@link DynamicConfigSource} useful in testing. <p> 
- * 
- * @author Elias Lindholm (elilin)
+ * Map backed {@link DynamicConfigSource} useful in testing. <p>
  *
+ * @author Elias Lindholm (elilin)
  */
 public class MapConfigSource extends AbstractDynamicConfigSource implements MutableConfigSource {
-	
+
 	private final ConcurrentMap<String, ListenableStringProperty> propertyValues = new ConcurrentHashMap<>();
-	
+
+	public MapConfigSource() {
+	}
+
+	public static MapConfigSource of(Map<String, ?> source) {
+		MapConfigSource configSource = new MapConfigSource();
+		source.forEach((key, value) -> configSource.set(key, value.toString()));
+		return configSource;
+	}
+
 	@Override
 	public String get(String propertyName, DynamicPropertyListener<String> propertyChangeListener) {
 		ListenableStringProperty dynamicProperty = getProperty(propertyName);
 		dynamicProperty.listeners.add(propertyChangeListener);
 		return dynamicProperty.value;
 	}
-	
+
 	public void set(String propertyName, String value) {
 		getProperty(propertyName).set(value);
 	}
-	
+
 	@Override
 	public <T> void set(Setting<T> setting, T value) {
 		set(setting.name(), value == null ? null : value.toString());
@@ -73,17 +81,16 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 	public void setAll(MapConfigSource config) {
 		config.propertyValues.forEach((key, value) -> set(key, value.value));
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.propertyValues.toString();
 	}
 
 	private static class ListenableStringProperty {
-		
+
 		private final Queue<DynamicPropertyListener<String>> listeners = new ConcurrentLinkedQueue<>();
 		private volatile String value;
-		
 		void propertyChanged(String newValue) {
 			listeners.forEach(l -> l.propertyChanged(newValue));
 		}
@@ -92,7 +99,7 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 			this.value = value;
 			propertyChanged(value);
 		}
-		
+
 		@Override
 		public String toString() {
 			return value;

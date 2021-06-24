@@ -16,22 +16,30 @@
 package com.avanza.astrix.config;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 
 interface PropertyParser<T> {
-	
+
 	PropertyParser<Boolean> BOOLEAN_PARSER = new BooleanParser();
 	PropertyParser<String> STRING_PARSER = new StringParser();
 	PropertyParser<Long> LONG_PARSER = new LongParser();
 	PropertyParser<Integer> INT_PARSER = new IntParser();
+	PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(Function.identity());
+	PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(Integer::valueOf);
+	PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long:: valueOf);
+	PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean:: valueOf);
 
 	static <T extends Enum<T>> PropertyParser<T> enumParser(Class<T> enumClass) {
 		return new EnumParser<>(enumClass);
 	}
 
 	T parse(String value);
-	
+
 	class BooleanParser implements PropertyParser<Boolean> {
 		@Override
 		public Boolean parse(String value) {
@@ -44,7 +52,7 @@ interface PropertyParser<T> {
 			throw new IllegalArgumentException("Cannot parse boolean value: \"" + value + "\"");
 		}
 	};
-	
+
 	class StringParser implements PropertyParser<String> {
 		@Override
 		public String parse(String value) {
@@ -58,7 +66,7 @@ interface PropertyParser<T> {
 			return Long.valueOf(value);
 		}
 	}
-	
+
 	class IntParser implements PropertyParser<Integer> {
 		@Override
 		public Integer parse(String value) {
@@ -81,4 +89,24 @@ interface PropertyParser<T> {
 					.orElseThrow(() -> new IllegalArgumentException("Unknown " + enumClass.getSimpleName() + " value " + value));
 		}
 	}
+
+	class ListParser<T> implements PropertyParser<List<T>> {
+
+		private final Function<String, T> singleValueParser;
+
+		ListParser(Function<String, T> singleValueParser) {
+			this.singleValueParser = singleValueParser;
+		}
+
+		@Override
+		public List<T> parse(String value) {
+			return value == null || value.trim().isEmpty() ? Collections.emptyList()
+					: Arrays.stream(value.split(","))
+					.map(String::trim)
+					.map(singleValueParser::apply)
+					.collect(toList());
+		}
+
+	}
+
 }

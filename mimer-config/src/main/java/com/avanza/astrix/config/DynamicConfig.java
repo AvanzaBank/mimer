@@ -42,7 +42,7 @@ public final class DynamicConfig {
 	public DynamicConfig(ConfigSource configSource) {
 		this(singletonList(configSource));
 	}
-	
+
 	/**
 	 * Creates a {@link DynamicConfig} instance resolving configuration properties using
 	 * the defined set of {@link ConfigSource}'s (possibly {@link DynamicConfigSource}). <p>
@@ -57,12 +57,12 @@ public final class DynamicConfig {
 		sources.addAll(Arrays.asList(other));
 		return new DynamicConfig(sources);
 	}
-	
+
 
 	public static DynamicConfig create(List<? extends ConfigSource> sources) {
 		return new DynamicConfig(sources);
 	}
-	
+
 	public DynamicConfig(List<? extends ConfigSource> configSources) {
 		this.configSources = new ArrayList<>(configSources.size());
 		for (ConfigSource configSource : configSources) {
@@ -73,7 +73,7 @@ public final class DynamicConfig {
 			}
 		}
 	}
-	
+
 	private static class DynamicConfigSourceAdapter extends AbstractDynamicConfigSource {
 		private final ConfigSource configSource;
 		public DynamicConfigSourceAdapter(ConfigSource configSource) {
@@ -83,12 +83,12 @@ public final class DynamicConfig {
 		public String get(String propertyName, DynamicPropertyListener<String> propertyChangeListener) {
 			return configSource.get(propertyName);
 		}
-		
+
 		@Override
 		public String toString() {
 			return this.configSource.toString();
 		}
-		
+
 	}
 
 	/**
@@ -100,15 +100,15 @@ public final class DynamicConfig {
 	public DynamicStringProperty getStringProperty(String name, String defaultValue) {
 		return getProperty(name, DynamicStringProperty.class, defaultValue, PropertyParser.STRING_PARSER);
 	}
-	
+
 	public DynamicBooleanProperty getBooleanProperty(String name, boolean defaultValue) {
 		return getProperty(name, DynamicBooleanProperty.class, defaultValue, PropertyParser.BOOLEAN_PARSER);
 	}
-	
+
 	public DynamicLongProperty getLongProperty(String name, long defaultValue) {
 		return getProperty(name, DynamicLongProperty.class, defaultValue, PropertyParser.LONG_PARSER);
 	}
-	
+
 	public DynamicIntProperty getIntProperty(String name, int defaultValue) {
 		return getProperty(name, DynamicIntProperty.class, defaultValue, PropertyParser.INT_PARSER);
 	}
@@ -118,8 +118,24 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicEnumProperty.class, defaultValue, PropertyParser.enumParser(enumClass));
 	}
 
+	public DynamicStringListProperty getStringListProperty(String name, List<String> defaultValue) {
+		return getProperty(name, DynamicStringListProperty.class, defaultValue, PropertyParser.STRING_LIST_PARSER);
+	}
+
+	public DynamicIntListProperty getIntListProperty(String name, List<Integer> defaultValue) {
+		return getProperty(name, DynamicIntListProperty.class, defaultValue, PropertyParser.INT_LIST_PARSER);
+	}
+
+	public DynamicLongListProperty getLongListProperty(String name, List<Long> defaultValue) {
+		return getProperty(name, DynamicLongListProperty.class, defaultValue, PropertyParser.LONG_LIST_PARSER);
+	}
+
+	public DynamicBooleanListProperty getBooleanListProperty(String name, List<Boolean> defaultValue) {
+		return getProperty(name, DynamicBooleanListProperty.class, defaultValue, PropertyParser.BOOLEAN_LIST_PARSER);
+	}
+
 	private <T, P extends DynamicProperty<T>> P getProperty(String name, Class<P> propertyType, T defaultValue, PropertyParser<T> propertyParser) {
-		return this.configCache.getInstance(propertyType.getSimpleName() + "." + name, 
+		return this.configCache.getInstance(propertyType.getSimpleName() + "." + name,
 				() -> bindPropertyToConfigurationSources(name, propertyType.getDeclaredConstructor().newInstance(), defaultValue, propertyParser));
 	}
 
@@ -138,7 +154,7 @@ public final class DynamicConfig {
 	private <T> void notifyPropertyChanged(String propertyNAme, T newValue) {
 		dynamicConfigListenerSupport.dispatchEvent(listener -> listener.propertyChanged(propertyNAme, newValue));
 	}
-	
+
 	private <T> DynamicPropertyChain<T> createPropertyChain(String name, T defaultValue, PropertyParser<T> propertyParser) {
 		DynamicPropertyChain<T> chain = DynamicPropertyChain.createWithDefaultValue(defaultValue, propertyParser);
 		for (DynamicConfigSource configSource : configSources) {
@@ -156,18 +172,18 @@ public final class DynamicConfig {
 		merged.addAll(dynamicConfigB.configSources);
 		return new DynamicConfig(merged);
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.configSources.toString();
 	}
 
 	/**
-	 * Adds a listener to this DynamicConfig instance. 
+	 * Adds a listener to this DynamicConfig instance.
 	 * 
 	 * The listener receives a "propertyChanged" event each time the resolved
 	 * value of a DynamicProperty read
-	 * from this instance changes. 
+	 * from this instance changes.
 	 * 
 	 * The listener receives a "propertyCreated" each time a new property
 	 * is created in this {@link DynamicConfig} instance (i.e the first time
