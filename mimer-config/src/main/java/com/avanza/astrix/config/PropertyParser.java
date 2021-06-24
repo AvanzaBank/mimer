@@ -31,8 +31,8 @@ interface PropertyParser<T> {
 	PropertyParser<Integer> INT_PARSER = new IntParser();
 	PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(Function.identity());
 	PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(Integer::valueOf);
-	PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long:: valueOf);
-	PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean:: valueOf);
+	PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long::valueOf);
+	PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean::valueOf);
 
 	static <T extends Enum<T>> PropertyParser<T> enumParser(Class<T> enumClass) {
 		return new EnumParser<>(enumClass);
@@ -95,7 +95,7 @@ interface PropertyParser<T> {
 		private final Function<String, T> singleValueParser;
 
 		ListParser(Function<String, T> singleValueParser) {
-			this.singleValueParser = singleValueParser;
+			this.singleValueParser = requireNonNull(singleValueParser);
 		}
 
 		@Override
@@ -103,7 +103,7 @@ interface PropertyParser<T> {
 			return value == null || value.trim().isEmpty() ? Collections.emptyList()
 					: Arrays.stream(value.split(","))
 					.map(String::trim)
-					.map(singleValueParser::apply)
+					.map(singleValueParser)
 					.collect(toList());
 		}
 

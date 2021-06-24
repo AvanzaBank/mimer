@@ -15,6 +15,7 @@
  */
 package com.avanza.astrix.config;
 
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
