@@ -15,15 +15,25 @@
  */
 package com.avanza.astrix.config;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 interface PropertyParser<T> {
-	
+
 	public static PropertyParser<Boolean> BOOLEAN_PARSER = new BooleanParser();
 	public static PropertyParser<String> STRING_PARSER = new StringParser();
 	public static PropertyParser<Long> LONG_PARSER = new LongParser();
 	public static PropertyParser<Integer> INT_PARSER = new IntParser();
+	public static PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(Function.identity());
+	public static PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(Integer::valueOf);
+	public static PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long:: valueOf);
+	public static PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean:: valueOf);
 
 	T parse(String value);
-	
+
 	class BooleanParser implements PropertyParser<Boolean> {
 		@Override
 		public Boolean parse(String value) {
@@ -36,7 +46,7 @@ interface PropertyParser<T> {
 			throw new IllegalArgumentException("Cannot parse boolean value: \"" + value + "\"");
 		}
 	};
-	
+
 	class StringParser implements PropertyParser<String> {
 		@Override
 		public String parse(String value) {
@@ -50,11 +60,31 @@ interface PropertyParser<T> {
 			return Long.parseLong(value);
 		}
 	}
-	
+
 	class IntParser implements PropertyParser<Integer> {
 		@Override
 		public Integer parse(String value) {
 			return Integer.parseInt(value);
 		}
 	}
+
+	class ListParser<T> implements PropertyParser<List<T>> {
+
+		private Function<String, T> singleValueParser;
+
+		ListParser(Function<String, T> singleValueParser) {
+			this.singleValueParser = singleValueParser;
+		}
+
+		@Override
+		public List<T> parse(String value) {
+			return value == null || value.trim().isEmpty() ? Collections.emptyList()
+					: Arrays.stream(value.split(","))
+					.map(String::trim)
+					.map(singleValueParser::apply)
+					.collect(Collectors.toList());
+		}
+
+	}
+
 }
