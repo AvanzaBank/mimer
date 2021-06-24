@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-	package com.avanza.astrix.config;
+package com.avanza.astrix.config;
 
 import java.util.List;
 import java.util.Map;
@@ -22,15 +22,14 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Map backed {@link DynamicConfigSource} useful in testing. <p> 
- * 
- * @author Elias Lindholm (elilin)
+ * Map backed {@link DynamicConfigSource} useful in testing. <p>
  *
+ * @author Elias Lindholm (elilin)
  */
 public class MapConfigSource extends AbstractDynamicConfigSource implements MutableConfigSource {
-	
+
 	private final ConcurrentMap<String, ListenableStringProperty> propertyValues = new ConcurrentHashMap<>();
-	
+
 	public MapConfigSource() {
 	}
 
@@ -39,34 +38,34 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 		source.forEach((key, value) -> configSource.set(key, value.toString()));
 		return configSource;
 	}
-	
+
 	@Override
 	public String get(String propertyName, DynamicPropertyListener<String> propertyChangeListener) {
 		ListenableStringProperty dynamicProperty = getProperty(propertyName);
 		dynamicProperty.listeners.add(propertyChangeListener);
 		return dynamicProperty.value;
 	}
-	
+
 	public void set(String propertyName, String value) {
 		getProperty(propertyName).set(value);
 	}
-	
+
 	@Override
 	public <T> void set(Setting<T> setting, T value) {
 		String stringRepresentation = value != null ? value.toString() : null;
 		getProperty(setting.name()).set(stringRepresentation);
 	}
-	
+
 	@Override
 	public void set(LongSetting setting, long value) {
 		getProperty(setting.name()).set(Long.toString(value));
 	}
-	
+
 	@Override
 	public void set(BooleanSetting setting, boolean value) {
 		getProperty(setting.name()).set(Boolean.toString(value));
 	}
-	
+
 	private ListenableStringProperty getProperty(String propertyName) {
 		ListenableStringProperty result = propertyValues.get(propertyName);
 		if (result != null) {
@@ -81,17 +80,17 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 			set(entry.getKey(), entry.getValue().value);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.propertyValues.toString();
 	}
 
 	private static class ListenableStringProperty {
-		
+
 		final List<DynamicPropertyListener<String>> listeners = new CopyOnWriteArrayList<>();
 		volatile String value;
-		
+
 		void propertyChanged(String newValue) {
 			for (DynamicPropertyListener<String> l : listeners) {
 				l.propertyChanged(newValue);
@@ -102,7 +101,7 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 			this.value = value;
 			propertyChanged(value);
 		}
-		
+
 		@Override
 		public String toString() {
 			return value;
