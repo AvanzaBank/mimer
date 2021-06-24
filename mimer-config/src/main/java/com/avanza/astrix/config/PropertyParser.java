@@ -28,9 +28,9 @@ interface PropertyParser<T> {
 	public static PropertyParser<Long> LONG_PARSER = new LongParser();
 	public static PropertyParser<Integer> INT_PARSER = new IntParser();
 	public static PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(Function.identity());
-	public static PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(Integer::parseInt);
-	public static PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long::parseLong);
-	public static PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean::parseBoolean);
+	public static PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(Integer::valueOf);
+	public static PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long:: valueOf);
+	public static PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean:: valueOf);
 
 	T parse(String value);
 
