@@ -20,7 +20,6 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * DynamicProperty of Set<T> type, see {@link DynamicProperty}.
@@ -28,52 +27,28 @@ import java.util.function.Supplier;
  *
  * Property values are parsed as a comma separated string of T
  */
-public final class DynamicSetProperty<T> implements DynamicProperty<Set<T>>, Supplier<Set<T>> {
-
-	private final ListenerSupport<DynamicPropertyListener<Set<T>>> listenerSupport = new ListenerSupport<>();
-	private volatile Set<T> value;
+public final class DynamicSetProperty<T> extends AbstractDynamicProperty<Set<T>> {
 
 	public DynamicSetProperty() {
-		this(Collections.emptySet());
+		super(Collections.emptySet());
 	}
 
 	public DynamicSetProperty(Set<T> initialValue) {
-		this.value = unmodifiableSet(initialValue);
-	}
-
-	@Override
-	public Set<T> getCurrentValue() {
-		return this.value;
-	}
-
-	@Override
-	public Set<T> get() {
-		return getCurrentValue();
+		super(unmodifiableSet(initialValue));
 	}
 
 	public void set(Set<T> value) {
-		this.value = unmodifiableSet(value);
-		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(this.value));
+		setValue(value);
 	}
 
 	@Override
 	public void setValue(Set<T> value) {
-		set(value);
+		super.setValue(unmodifiableSet(value));
 	}
 
 	@Override
 	public String toString() {
-		return this.value.stream().map(String::valueOf).collect(joining(","));
-	}
-
-	@Override
-	public void addListener(DynamicPropertyListener<Set<T>> listener) {
-		listenerSupport.addListener(listener);
-	}
-
-	@Override
-	public void removeListener(DynamicPropertyListener<Set<T>> listener) {
-		listenerSupport.removeListener(listener);
+		return getCurrentValue().stream().map(String::valueOf).collect(joining(","));
 	}
 
 }

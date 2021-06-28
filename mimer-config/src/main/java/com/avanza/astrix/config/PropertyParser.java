@@ -15,16 +15,18 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 import static java.util.Objects.requireNonNull;
-import static java.util.stream.Collectors.toCollection;
-import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 interface PropertyParser<T> {
 
@@ -97,48 +99,63 @@ interface PropertyParser<T> {
 		}
 	}
 
-	class ListParser<T> implements PropertyParser<List<T>> {
-
+	abstract class CollectionParser<T, C extends Collection<T>> implements PropertyParser<C> {
 		private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
 		private final PropertyParser<T> singleValueParser;
 
-		ListParser(PropertyParser<T> singleValueParser) {
+		protected CollectionParser(PropertyParser<T> singleValueParser) {
 			this.singleValueParser = requireNonNull(singleValueParser);
 		}
 
 		@Override
-		public List<T> parse(String value) {
+		public final C parse(String value) {
 			String trimmed = value == null? "" : value.trim();
 			if (trimmed.isEmpty()) {
-				return Collections.emptyList();
+				return emptyCollection();
 			} else {
 				return SEPARATOR.splitAsStream(trimmed)
 						.map(singleValueParser::parse)
-						.collect(toList());
+						.collect(toCollection());
 			}
+		}
+
+		protected abstract C emptyCollection();
+
+		protected abstract Collector<T, ?, C> toCollection();
+	}
+
+	class ListParser<T> extends CollectionParser<T, List<T>> {
+
+		ListParser(PropertyParser<T> singleValueParser) {
+			super(singleValueParser);
+		}
+
+		@Override
+		protected List<T> emptyCollection() {
+			return emptyList();
+		}
+
+		@Override
+		protected Collector<T, ?, List<T>> toCollection() {
+			return Collectors.toList();
 		}
 
 	}
 
-	class SetParser<T> implements PropertyParser<Set<T>> {
-
-		private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
-		private final PropertyParser<T> singleValueParser;
+	class SetParser<T> extends CollectionParser<T, Set<T>> {
 
 		SetParser(PropertyParser<T> singleValueParser) {
-			this.singleValueParser = requireNonNull(singleValueParser);
+			super(singleValueParser);
 		}
 
 		@Override
-		public Set<T> parse(String value) {
-			String trimmed = value == null? "" : value.trim();
-			if (trimmed.isEmpty()) {
-				return Collections.emptySet();
-			} else {
-				return SEPARATOR.splitAsStream(trimmed)
-						.map(singleValueParser::parse)
-						.collect(toCollection(LinkedHashSet::new));
-			}
+		protected Set<T> emptyCollection() {
+			return emptySet();
+		}
+
+		@Override
+		protected Collector<T, ?, Set<T>> toCollection() {
+			return Collectors.toCollection(LinkedHashSet::new);
 		}
 
 	}

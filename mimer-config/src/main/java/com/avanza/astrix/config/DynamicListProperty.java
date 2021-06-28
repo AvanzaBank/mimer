@@ -15,12 +15,11 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.joining;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * DynamicProperty of List<T> type, see {@link DynamicProperty}.
@@ -28,52 +27,28 @@ import java.util.function.Supplier;
  *
  * Property values are parsed as a comma separated string of T
  */
-public final class DynamicListProperty<T> implements DynamicProperty<List<T>>, Supplier<List<T>> {
-
-	private final ListenerSupport<DynamicPropertyListener<List<T>>> listenerSupport = new ListenerSupport<>();
-	private volatile List<T> value;
+public final class DynamicListProperty<T> extends AbstractDynamicProperty<List<T>> {
 
 	public DynamicListProperty() {
-		this(Collections.emptyList());
+		super(emptyList());
 	}
 
 	public DynamicListProperty(List<T> initialValue) {
-		this.value = unmodifiableList(initialValue);
-	}
-
-	@Override
-	public List<T> getCurrentValue() {
-		return this.value;
-	}
-
-	@Override
-	public List<T> get() {
-		return getCurrentValue();
+		super(unmodifiableList(initialValue));
 	}
 
 	public void set(List<T> value) {
-		this.value = unmodifiableList(value);
-		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(this.value));
+		setValue(value);
 	}
 
 	@Override
 	public void setValue(List<T> value) {
-		set(value);
+		super.setValue(unmodifiableList(value));
 	}
 
 	@Override
 	public String toString() {
-		return this.value.stream().map(String::valueOf).collect(joining(","));
-	}
-
-	@Override
-	public void addListener(DynamicPropertyListener<List<T>> listener) {
-		listenerSupport.addListener(listener);
-	}
-
-	@Override
-	public void removeListener(DynamicPropertyListener<List<T>> listener) {
-		listenerSupport.removeListener(listener);
+		return getCurrentValue().stream().map(String::valueOf).collect(joining(","));
 	}
 
 }
