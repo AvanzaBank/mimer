@@ -15,18 +15,18 @@
  */
 package com.avanza.astrix.config;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 interface PropertyParser<T> {
 
@@ -60,14 +60,14 @@ interface PropertyParser<T> {
 			}
 			throw new IllegalArgumentException("Cannot parse boolean value: \"" + value + "\"");
 		}
-	};
+	}
 
 	class StringParser implements PropertyParser<String> {
 		@Override
 		public String parse(String value) {
 			return value;
 		}
-	};
+	}
 
 	class LongParser implements PropertyParser<Long> {
 		@Override
@@ -100,44 +100,35 @@ interface PropertyParser<T> {
 	}
 
 	abstract class CollectionParser<T, C extends Collection<T>> implements PropertyParser<C> {
-		private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
 		private final PropertyParser<T> singleValueParser;
+		private final Supplier<C> emptyCollection;
+		private final Collector<T, ?, C> toCollection;
 
-		protected CollectionParser(PropertyParser<T> singleValueParser) {
+		protected CollectionParser(PropertyParser<T> singleValueParser, Supplier<C> emptyCollection, Collector<T, ?, C> toCollection) {
 			this.singleValueParser = requireNonNull(singleValueParser);
+			this.emptyCollection = requireNonNull(emptyCollection);
+			this.toCollection = requireNonNull(toCollection);
 		}
 
 		@Override
 		public final C parse(String value) {
-			String trimmed = value == null? "" : value.trim();
+			String trimmed = value == null ? "" : value.trim();
 			if (trimmed.isEmpty()) {
-				return emptyCollection();
+				return emptyCollection.get();
 			} else {
-				return SEPARATOR.splitAsStream(trimmed)
+				return Arrays.stream(trimmed.split(","))
+						.map(String::trim)
 						.map(singleValueParser::parse)
-						.collect(toCollection());
+						.collect(toCollection);
 			}
 		}
 
-		protected abstract C emptyCollection();
-
-		protected abstract Collector<T, ?, C> toCollection();
 	}
 
 	class ListParser<T> extends CollectionParser<T, List<T>> {
 
 		ListParser(PropertyParser<T> singleValueParser) {
-			super(singleValueParser);
-		}
-
-		@Override
-		protected List<T> emptyCollection() {
-			return emptyList();
-		}
-
-		@Override
-		protected Collector<T, ?, List<T>> toCollection() {
-			return Collectors.toList();
+			super(singleValueParser, Collections::emptyList, toList());
 		}
 
 	}
@@ -145,17 +136,7 @@ interface PropertyParser<T> {
 	class SetParser<T> extends CollectionParser<T, Set<T>> {
 
 		SetParser(PropertyParser<T> singleValueParser) {
-			super(singleValueParser);
-		}
-
-		@Override
-		protected Set<T> emptyCollection() {
-			return emptySet();
-		}
-
-		@Override
-		protected Collector<T, ?, Set<T>> toCollection() {
-			return Collectors.toCollection(LinkedHashSet::new);
+			super(singleValueParser, Collections::emptySet, toCollection(LinkedHashSet::new));
 		}
 
 	}
