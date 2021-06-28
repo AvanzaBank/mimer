@@ -16,12 +16,15 @@
 package com.avanza.astrix.config;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 interface PropertyParser<T> {
 
@@ -29,13 +32,17 @@ interface PropertyParser<T> {
 	PropertyParser<String> STRING_PARSER = new StringParser();
 	PropertyParser<Long> LONG_PARSER = new LongParser();
 	PropertyParser<Integer> INT_PARSER = new IntParser();
-	PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(Function.identity());
-	PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(Integer::valueOf);
-	PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long::valueOf);
-	PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean::valueOf);
+	PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(BOOLEAN_PARSER);
+	PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(STRING_PARSER);
+	PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(LONG_PARSER);
+	PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(INT_PARSER);
 
 	static <T extends Enum<T>> PropertyParser<T> enumParser(Class<T> enumClass) {
 		return new EnumParser<>(enumClass);
+	}
+
+	static <T extends Enum<T>> PropertyParser<Set<T>> enumSetParser(Class<T> enumClass) {
+		return new SetParser<>(enumParser(enumClass));
 	}
 
 	T parse(String value);
@@ -92,19 +99,46 @@ interface PropertyParser<T> {
 
 	class ListParser<T> implements PropertyParser<List<T>> {
 
-		private final Function<String, T> singleValueParser;
+		private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
+		private final PropertyParser<T> singleValueParser;
 
-		ListParser(Function<String, T> singleValueParser) {
+		ListParser(PropertyParser<T> singleValueParser) {
 			this.singleValueParser = requireNonNull(singleValueParser);
 		}
 
 		@Override
 		public List<T> parse(String value) {
-			return value == null || value.trim().isEmpty() ? Collections.emptyList()
-					: Arrays.stream(value.split(","))
-					.map(String::trim)
-					.map(singleValueParser)
-					.collect(toList());
+			String trimmed = value == null? "" : value.trim();
+			if (trimmed.isEmpty()) {
+				return Collections.emptyList();
+			} else {
+				return SEPARATOR.splitAsStream(trimmed)
+						.map(singleValueParser::parse)
+						.collect(toList());
+			}
+		}
+
+	}
+
+	class SetParser<T> implements PropertyParser<Set<T>> {
+
+		private static final Pattern SEPARATOR = Pattern.compile("\\s*,\\s*");
+		private final PropertyParser<T> singleValueParser;
+
+		SetParser(PropertyParser<T> singleValueParser) {
+			this.singleValueParser = requireNonNull(singleValueParser);
+		}
+
+		@Override
+		public Set<T> parse(String value) {
+			String trimmed = value == null? "" : value.trim();
+			if (trimmed.isEmpty()) {
+				return Collections.emptySet();
+			} else {
+				return SEPARATOR.splitAsStream(trimmed)
+						.map(singleValueParser::parse)
+						.collect(toCollection(LinkedHashSet::new));
+			}
 		}
 
 	}

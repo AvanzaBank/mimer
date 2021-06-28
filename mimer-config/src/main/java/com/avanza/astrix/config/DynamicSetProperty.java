@@ -15,42 +15,49 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.joining;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
-public class ListProperty<T> implements DynamicProperty<List<T>>, Supplier<List<T>> {
+/**
+ * DynamicProperty of Set<T> type, see {@link DynamicProperty}.
+ * <p>
+ *
+ * Property values are parsed as a comma separated string of T
+ */
+public final class DynamicSetProperty<T> implements DynamicProperty<Set<T>>, Supplier<Set<T>> {
 
-	private final ListenerSupport<DynamicPropertyListener<List<T>>> listenerSupport = new ListenerSupport<>();
-	private volatile List<T> value;
+	private final ListenerSupport<DynamicPropertyListener<Set<T>>> listenerSupport = new ListenerSupport<>();
+	private volatile Set<T> value;
 
-	public ListProperty() {
-		this(Collections.emptyList());
+	public DynamicSetProperty() {
+		this(Collections.emptySet());
 	}
 
-	public ListProperty(List<T> initialValue) {
-		this.value = Collections.unmodifiableList(initialValue);
+	public DynamicSetProperty(Set<T> initialValue) {
+		this.value = unmodifiableSet(initialValue);
 	}
 
 	@Override
-	public List<T> getCurrentValue() {
-		return get();
-	}
-
-	@Override
-	public List<T> get() {
+	public Set<T> getCurrentValue() {
 		return this.value;
 	}
 
-	public void set(List<T> value) {
-		this.value = Collections.unmodifiableList(value);
+	@Override
+	public Set<T> get() {
+		return getCurrentValue();
+	}
+
+	public void set(Set<T> value) {
+		this.value = unmodifiableSet(value);
 		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(this.value));
 	}
 
 	@Override
-	public void setValue(List<T> value) {
+	public void setValue(Set<T> value) {
 		set(value);
 	}
 
@@ -60,12 +67,12 @@ public class ListProperty<T> implements DynamicProperty<List<T>>, Supplier<List<
 	}
 
 	@Override
-	public void addListener(DynamicPropertyListener<List<T>> listener) {
+	public void addListener(DynamicPropertyListener<Set<T>> listener) {
 		listenerSupport.addListener(listener);
 	}
 
 	@Override
-	public void removeListener(DynamicPropertyListener<List<T>> listener) {
+	public void removeListener(DynamicPropertyListener<Set<T>> listener) {
 		listenerSupport.removeListener(listener);
 	}
 

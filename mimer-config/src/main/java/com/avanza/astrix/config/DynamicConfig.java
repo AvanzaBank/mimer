@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This is an abstraction for a hierarchical set of configuration sources. Each property is resolved
@@ -118,20 +119,29 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicEnumProperty.class, defaultValue, PropertyParser.enumParser(enumClass));
 	}
 
-	public DynamicStringListProperty getStringListProperty(String name, List<String> defaultValue) {
-		return getProperty(name, DynamicStringListProperty.class, defaultValue, PropertyParser.STRING_LIST_PARSER);
+	@SuppressWarnings("unchecked")
+	public DynamicListProperty<String> getStringListProperty(String name, List<String> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.STRING_LIST_PARSER);
 	}
 
-	public DynamicIntListProperty getIntListProperty(String name, List<Integer> defaultValue) {
-		return getProperty(name, DynamicIntListProperty.class, defaultValue, PropertyParser.INT_LIST_PARSER);
+	@SuppressWarnings("unchecked")
+	public DynamicListProperty<Integer> getIntListProperty(String name, List<Integer> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.INT_LIST_PARSER);
 	}
 
-	public DynamicLongListProperty getLongListProperty(String name, List<Long> defaultValue) {
-		return getProperty(name, DynamicLongListProperty.class, defaultValue, PropertyParser.LONG_LIST_PARSER);
+	@SuppressWarnings("unchecked")
+	public DynamicListProperty<Long> getLongListProperty(String name, List<Long> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.LONG_LIST_PARSER);
 	}
 
-	public DynamicBooleanListProperty getBooleanListProperty(String name, List<Boolean> defaultValue) {
-		return getProperty(name, DynamicBooleanListProperty.class, defaultValue, PropertyParser.BOOLEAN_LIST_PARSER);
+	@SuppressWarnings("unchecked")
+	public DynamicListProperty<Boolean> getBooleanListProperty(String name, List<Boolean> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.BOOLEAN_LIST_PARSER);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends Enum<T>> DynamicSetProperty<T> getEnumSetProperty(String name, Class<T> enumClass, Set<T> defaultValue) {
+		return getProperty(name, DynamicSetProperty.class, defaultValue, PropertyParser.enumSetParser(enumClass));
 	}
 
 	private <T, P extends DynamicProperty<T>> P getProperty(String name, Class<P> propertyType, T defaultValue, PropertyParser<T> propertyParser) {

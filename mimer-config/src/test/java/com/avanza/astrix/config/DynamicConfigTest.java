@@ -15,7 +15,13 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -23,11 +29,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 
@@ -38,6 +42,7 @@ public class DynamicConfigTest {
 	private final MapConfigSource firstSource = new MapConfigSource();
 	private final MapConfigSource secondSource = new MapConfigSource();
 	private final DynamicConfig dynamicConfig = new DynamicConfig(Arrays.asList(firstSource, secondSource));
+
 	@Test
 	public void propertyIsResolvedToFirstOccurrenceInConfigSources() throws Exception {
 		DynamicStringProperty stringProperty = dynamicConfig.getStringProperty("foo", "defaultFoo");
@@ -105,71 +110,89 @@ public class DynamicConfigTest {
 
 	@Test
 	public void stringListProperty() throws Exception {
-		DynamicStringListProperty property = dynamicConfig.getStringListProperty("foo", Collections.emptyList());
-		assertEquals(Collections.emptyList(), property.get());
+		DynamicListProperty<String> property = dynamicConfig.getStringListProperty("foo", emptyList());
+		assertThat(property.get(), empty());
 
 		secondSource.set("foo", "1,2,   3   ,4");
 		assertEquals(Arrays.asList("1", "2", "3", "4"), property.get());
 
 		firstSource.set("foo", "1");
-		assertEquals(Arrays.asList("1"), property.get());
+		assertEquals(singletonList("1"), property.get());
 
 		firstSource.set("foo", "");
-		assertThat(property.get(), Matchers.hasSize(0));
+		assertThat(property.get(), empty());
 	}
 
 	@Test
 	public void intListProperty() throws Exception {
-		DynamicIntListProperty property = dynamicConfig.getIntListProperty("foo", Collections.emptyList());
-		assertEquals(Collections.emptyList(), property.get());
+		DynamicListProperty<Integer> property = dynamicConfig.getIntListProperty("foo", emptyList());
+		assertThat(property.get(), empty());
 
 		secondSource.set("foo", "1, 2    ,3,4,");
 		assertEquals(Arrays.asList(1, 2, 3, 4), property.get());
 
 		firstSource.set("foo", "1");
-		assertEquals(Arrays.asList(1), property.get());
+		assertEquals(singletonList(1), property.get());
 
 		firstSource.set("foo", "");
-		assertThat(property.get(), Matchers.hasSize(0));
+		assertThat(property.get(), empty());
 
 		firstSource.set("foo", "unparseable value,2,3,4");
-		assertThat(property.get(), Matchers.hasSize(0));
+		assertThat(property.get(), empty());
 	}
 
 	@Test
 	public void longListProperty() throws Exception {
-		DynamicLongListProperty property = dynamicConfig.getLongListProperty("foo", Collections.emptyList());
-		assertEquals(Collections.emptyList(), property.get());
+		DynamicListProperty<Long> property = dynamicConfig.getLongListProperty("foo", emptyList());
+		assertThat(property.get(), empty());
 
 		secondSource.set("foo", "1, 2    ,3,4,");
 		assertEquals(Arrays.asList(1L, 2L, 3L, 4L), property.get());
 
 		firstSource.set("foo", "1");
-		assertEquals(Arrays.asList(1L), property.get());
+		assertEquals(singletonList(1L), property.get());
 
 		firstSource.set("foo", "");
-		assertThat(property.get(), Matchers.hasSize(0));
+		assertThat(property.get(), empty());
 
 		firstSource.set("foo", "unparseable value,2,3,4");
-		assertThat(property.get(), Matchers.hasSize(0));
+		assertThat(property.get(), empty());
 	}
 
 	@Test
 	public void booleanListProperty() throws Exception {
-		DynamicBooleanListProperty property = dynamicConfig.getBooleanListProperty("foo", Collections.emptyList());
-		assertEquals(Collections.emptyList(), property.get());
+		DynamicListProperty<Boolean> property = dynamicConfig.getBooleanListProperty("foo", emptyList());
+		assertThat(property.get(), empty());
 
 		secondSource.set("foo", "true, false,  false, TRUE");
 		assertEquals(Arrays.asList(true, false, false, true), property.get());
 
 		firstSource.set("foo", "true");
-		assertEquals(Arrays.asList(true), property.get());
+		assertEquals(singletonList(true), property.get());
 
 		firstSource.set("foo", "");
-		assertThat(property.get(), Matchers.hasSize(0));
+		assertThat(property.get(), empty());
 
 		firstSource.set("foo", "unparseable value,false, true");
-		assertEquals(Arrays.asList(false, false, true), property.get());
+		assertThat(property.get(), empty());
+	}
+
+	@Test
+	public void enumSetProperty() {
+		DynamicSetProperty<MyEnum> property = dynamicConfig.getEnumSetProperty("myEnumSet", MyEnum.class, emptySet());
+		assertThat(property.get(), empty());
+
+		secondSource.set("myEnumSet", "first,  tHiRd, SECOND  ");
+		assertThat(property.get(), contains(MyEnum.FIRST, MyEnum.THIRD, MyEnum.SECOND));
+
+		firstSource.set("myEnumSet", "FIRST");
+		assertEquals(singleton(MyEnum.FIRST), property.get());
+
+		firstSource.set("myEnumSet", "");
+		assertThat(property.get(), empty());
+
+		firstSource.set("myEnumSet", "unparseable value,second, FIRST");
+		assertThat(property.get(), empty());
 	}
 
 	@Test
@@ -212,7 +235,7 @@ public class DynamicConfigTest {
 	@Test
 	public void merge() throws Exception {
 		MapConfigSource thirdSource = new MapConfigSource();
-		DynamicConfig dynamicConfigB = new DynamicConfig(Arrays.asList(thirdSource));
+		DynamicConfig dynamicConfigB = new DynamicConfig(singletonList(thirdSource));
 
 		DynamicConfig merged = DynamicConfig.merged(dynamicConfig, dynamicConfigB);
 
