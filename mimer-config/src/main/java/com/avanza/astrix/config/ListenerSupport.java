@@ -15,26 +15,26 @@
  */
 package com.avanza.astrix.config;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
+
+import static java.util.Objects.requireNonNull;
+
 /**
- * 
+ *
  * @author Elias Lindholm (elilin)
  *
  * @param <T>
  */
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 final class ListenerSupport<T> {
 	
 	private static final Logger log = LoggerFactory.getLogger(ListenerSupport.class);
 	
-	private final List<SubscribedListener> listeners = new CopyOnWriteArrayList<>();
-	
+	private final Queue<SubscribedListener> listeners = new ConcurrentLinkedQueue<>();
 	
 	void addListener(T l) {
 		listeners.add(new SubscribedListener(l));
@@ -51,14 +51,14 @@ final class ListenerSupport<T> {
 	}
 	
 	void removeListener(T l) {
-		listeners.removeAll(Arrays.asList(new SubscribedListener(l)));
+		listeners.remove(new SubscribedListener(l));
 	}
 	
 	private class SubscribedListener {
-		private T listener;
+		private final T listener;
 
 		public SubscribedListener(T l) {
-			this.listener = Objects.requireNonNull(l);
+			this.listener = requireNonNull(l);
 		}
 
 		@Override

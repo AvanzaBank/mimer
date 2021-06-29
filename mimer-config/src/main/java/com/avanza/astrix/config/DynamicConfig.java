@@ -15,10 +15,13 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Collections.singletonList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This is an abstraction for a hierarchical set of configuration sources. Each property is resolved
@@ -38,13 +41,13 @@ public final class DynamicConfig {
 	private final ListenerSupport<DynamicConfigListener> dynamicConfigListenerSupport = new ListenerSupport<>();
 
 	public DynamicConfig(ConfigSource configSource) {
-		this(Arrays.asList(configSource));
+		this(singletonList(configSource));
 	}
 
 	/**
 	 * Creates a {@link DynamicConfig} instance resolving configuration properties using
 	 * the defined set of {@link ConfigSource}'s (possibly {@link DynamicConfigSource}). <p>
-	 * 
+	 *
 	 * @param first
 	 * @param other
 	 * @return
@@ -65,7 +68,7 @@ public final class DynamicConfig {
 		this.configSources = new ArrayList<>(configSources.size());
 		for (ConfigSource configSource : configSources) {
 			if (configSource instanceof DynamicConfigSource) {
-				this.configSources.add(DynamicConfigSource.class.cast(configSource));
+				this.configSources.add((DynamicConfigSource) configSource);
 			} else {
 				this.configSources.add(new DynamicConfigSourceAdapter(configSource));
 			}
@@ -111,25 +114,39 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicIntProperty.class, defaultValue, PropertyParser.INT_PARSER);
 	}
 
-	public DynamicStringListProperty getStringListProperty(String name, List<String> defaultValue) {
-		return getProperty(name, DynamicStringListProperty.class, defaultValue, PropertyParser.STRING_LIST_PARSER);
+	@SuppressWarnings("unchecked")
+	public <T extends Enum<T>> DynamicEnumProperty<T> getEnumProperty(String name, Class<T> enumClass, T defaultValue) {
+		return getProperty(name, DynamicEnumProperty.class, defaultValue, PropertyParser.enumParser(enumClass));
 	}
 
-	public DynamicIntListProperty getIntListProperty(String name, List<Integer> defaultValue) {
-		return getProperty(name, DynamicIntListProperty.class, defaultValue, PropertyParser.INT_LIST_PARSER);
+	@SuppressWarnings("unchecked")
+	public DynamicListProperty<String> getStringListProperty(String name, List<String> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.STRING_LIST_PARSER);
 	}
 
-	public DynamicLongListProperty getLongListProperty(String name, List<Long> defaultValue) {
-		return getProperty(name, DynamicLongListProperty.class, defaultValue, PropertyParser.LONG_LIST_PARSER);
+	@SuppressWarnings("unchecked")
+	public DynamicListProperty<Integer> getIntListProperty(String name, List<Integer> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.INT_LIST_PARSER);
 	}
 
-	public DynamicBooleanListProperty getBooleanListProperty(String name, List<Boolean> defaultValue) {
-		return getProperty(name, DynamicBooleanListProperty.class, defaultValue, PropertyParser.BOOLEAN_LIST_PARSER);
+	@SuppressWarnings("unchecked")
+	public DynamicListProperty<Long> getLongListProperty(String name, List<Long> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.LONG_LIST_PARSER);
+	}
+
+	@SuppressWarnings("unchecked")
+	public DynamicListProperty<Boolean> getBooleanListProperty(String name, List<Boolean> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.BOOLEAN_LIST_PARSER);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends Enum<T>> DynamicSetProperty<T> getEnumSetProperty(String name, Class<T> enumClass, Set<T> defaultValue) {
+		return getProperty(name, DynamicSetProperty.class, defaultValue, PropertyParser.enumSetParser(enumClass));
 	}
 
 	private <T, P extends DynamicProperty<T>> P getProperty(String name, Class<P> propertyType, T defaultValue, PropertyParser<T> propertyParser) {
 		return this.configCache.getInstance(propertyType.getSimpleName() + "." + name,
-				() -> bindPropertyToConfigurationSources(name, propertyType.newInstance(), defaultValue, propertyParser));
+				() -> bindPropertyToConfigurationSources(name, propertyType.getDeclaredConstructor().newInstance(), defaultValue, propertyParser));
 	}
 
 	private <T, P extends DynamicProperty<T>> P bindPropertyToConfigurationSources(String name, P property, T defaultValue, PropertyParser<T> propertyParser) {

@@ -15,7 +15,7 @@
  */
 package com.avanza.astrix.config;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A Setting of boolean type, see {@link Setting} <p>
@@ -30,7 +30,7 @@ public class BooleanSetting implements Setting<Boolean> {
 	private final boolean defaultValue;
 	
 	private BooleanSetting(String name, boolean defaultValue) {
-		this.name = Objects.requireNonNull(name);
+		this.name = requireNonNull(name);
 		this.defaultValue = defaultValue;
 	}
 	
@@ -50,7 +50,7 @@ public class BooleanSetting implements Setting<Boolean> {
 	
 	@Override
 	public Boolean defaultValue() {
-		return Boolean.valueOf(defaultValue);
+		return defaultValue;
 	}
 	
 

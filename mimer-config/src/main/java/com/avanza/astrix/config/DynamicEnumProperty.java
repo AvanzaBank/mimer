@@ -15,23 +15,12 @@
  */
 package com.avanza.astrix.config;
 
-import java.util.List;
+public final class DynamicEnumProperty<T extends Enum<T>> extends AbstractDynamicProperty<T> {
 
-/**
- * DynamicProperty of List<String> type, see {@link DynamicProperty}. <p>
- * 
- * Property values are parsed as a comma separated string
- *
- */
-public final class DynamicStringListProperty extends ListProperty<String> {
-
-	public DynamicStringListProperty() {
-		super();
+	@Override
+	public String toString() {
+		T value = getCurrentValue();
+		return value == null? null : value.name();
 	}
-
-	public DynamicStringListProperty(List<String> initialValue) {
-		super(initialValue);
-	}
-
 
 }

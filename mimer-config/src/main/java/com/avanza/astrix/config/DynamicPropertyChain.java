@@ -92,7 +92,7 @@ final class DynamicPropertyChain<T> implements DynamicPropertyListener<DynamicCo
 	}
 	
 	private class PropertyChangeEventDispatcher {
-		private DynamicPropertyChainListener<T> listener;
+		private final DynamicPropertyChainListener<T> listener;
 		private T lastNotifiedState;
 		
 		public PropertyChangeEventDispatcher(DynamicPropertyChainListener<T> listener) {

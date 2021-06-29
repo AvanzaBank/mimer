@@ -46,7 +46,7 @@ public class LongSetting implements Setting<Long> {
 	
 	@Override
 	public Long defaultValue() {
-		return Long.valueOf(defaultValue);
+		return defaultValue;
 	}
 
 

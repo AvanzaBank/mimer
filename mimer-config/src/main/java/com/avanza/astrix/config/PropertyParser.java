@@ -15,22 +15,37 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toList;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 
 interface PropertyParser<T> {
 
-	public static PropertyParser<Boolean> BOOLEAN_PARSER = new BooleanParser();
-	public static PropertyParser<String> STRING_PARSER = new StringParser();
-	public static PropertyParser<Long> LONG_PARSER = new LongParser();
-	public static PropertyParser<Integer> INT_PARSER = new IntParser();
-	public static PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(Function.identity());
-	public static PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(Integer::valueOf);
-	public static PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(Long:: valueOf);
-	public static PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(Boolean:: valueOf);
+	PropertyParser<Boolean> BOOLEAN_PARSER = new BooleanParser();
+	PropertyParser<String> STRING_PARSER = new StringParser();
+	PropertyParser<Long> LONG_PARSER = new LongParser();
+	PropertyParser<Integer> INT_PARSER = new IntParser();
+	PropertyParser<List<Boolean>> BOOLEAN_LIST_PARSER = new ListParser<>(BOOLEAN_PARSER);
+	PropertyParser<List<String>> STRING_LIST_PARSER = new ListParser<>(STRING_PARSER);
+	PropertyParser<List<Long>> LONG_LIST_PARSER = new ListParser<>(LONG_PARSER);
+	PropertyParser<List<Integer>> INT_LIST_PARSER = new ListParser<>(INT_PARSER);
+
+	static <T extends Enum<T>> PropertyParser<T> enumParser(Class<T> enumClass) {
+		return new EnumParser<>(enumClass);
+	}
+
+	static <T extends Enum<T>> PropertyParser<Set<T>> enumSetParser(Class<T> enumClass) {
+		return new SetParser<>(enumParser(enumClass));
+	}
 
 	T parse(String value);
 
@@ -45,44 +60,83 @@ interface PropertyParser<T> {
 			}
 			throw new IllegalArgumentException("Cannot parse boolean value: \"" + value + "\"");
 		}
-	};
+	}
 
 	class StringParser implements PropertyParser<String> {
 		@Override
 		public String parse(String value) {
 			return value;
 		}
-	};
+	}
 
 	class LongParser implements PropertyParser<Long> {
 		@Override
 		public Long parse(String value) {
-			return Long.parseLong(value);
+			return Long.valueOf(value);
 		}
 	}
 
 	class IntParser implements PropertyParser<Integer> {
 		@Override
 		public Integer parse(String value) {
-			return Integer.parseInt(value);
+			return Integer.valueOf(value);
 		}
 	}
 
-	class ListParser<T> implements PropertyParser<List<T>> {
+	class EnumParser<T extends Enum<T>> implements PropertyParser<T> {
+		private final Class<T> enumClass;
 
-		private Function<String, T> singleValueParser;
-
-		ListParser(Function<String, T> singleValueParser) {
-			this.singleValueParser = singleValueParser;
+		public EnumParser(Class<T> enumClass) {
+			this.enumClass = requireNonNull(enumClass);
 		}
 
 		@Override
-		public List<T> parse(String value) {
-			return value == null || value.trim().isEmpty() ? Collections.emptyList()
-					: Arrays.stream(value.split(","))
-					.map(String::trim)
-					.map(singleValueParser::apply)
-					.collect(Collectors.toList());
+		public T parse(String value) {
+			return Arrays.stream(enumClass.getEnumConstants())
+					.filter(it -> it.name().equalsIgnoreCase(value))
+					.findFirst()
+					.orElseThrow(() -> new IllegalArgumentException("Unknown " + enumClass.getSimpleName() + " value " + value));
+		}
+	}
+
+	abstract class CollectionParser<T, C extends Collection<T>> implements PropertyParser<C> {
+		private final PropertyParser<T> singleValueParser;
+		private final Supplier<C> emptyCollection;
+		private final Collector<T, ?, C> toCollection;
+
+		protected CollectionParser(PropertyParser<T> singleValueParser, Supplier<C> emptyCollection, Collector<T, ?, C> toCollection) {
+			this.singleValueParser = requireNonNull(singleValueParser);
+			this.emptyCollection = requireNonNull(emptyCollection);
+			this.toCollection = requireNonNull(toCollection);
+		}
+
+		@Override
+		public final C parse(String value) {
+			String trimmed = value == null ? "" : value.trim();
+			if (trimmed.isEmpty()) {
+				return emptyCollection.get();
+			} else {
+				return Arrays.stream(trimmed.split(","))
+						.map(String::trim)
+						.map(singleValueParser::parse)
+						.collect(toCollection);
+			}
+		}
+
+	}
+
+	class ListParser<T> extends CollectionParser<T, List<T>> {
+
+		ListParser(PropertyParser<T> singleValueParser) {
+			super(singleValueParser, Collections::emptyList, toList());
+		}
+
+	}
+
+	class SetParser<T> extends CollectionParser<T, Set<T>> {
+
+		SetParser(PropertyParser<T> singleValueParser) {
+			super(singleValueParser, Collections::emptySet, toCollection(LinkedHashSet::new));
 		}
 
 	}

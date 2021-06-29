@@ -15,60 +15,28 @@
  */
 package com.avanza.astrix.config;
 
-import java.util.function.Supplier;
-
 /**
  * DynamicProperty of String type, see {@link DynamicProperty}. <p>
- * 
- * @author Elias Lindholm (elilin)
  *
+ * @author Elias Lindholm (elilin)
  */
-public final class DynamicStringProperty implements DynamicProperty<String>, Supplier<String> {
+public final class DynamicStringProperty extends AbstractDynamicProperty<String> {
 
-	private final ListenerSupport<DynamicPropertyListener<String>> listenerSupport = new ListenerSupport<>();
-	private volatile String value;
-	
 	public DynamicStringProperty(String initialValue) {
-		this.value = initialValue;
-	}
-	
-	public DynamicStringProperty() {
-		this.value = null;
-	}
-	
-	@Override
-	public String getCurrentValue() {
-		return this.value;
+		super(initialValue);
 	}
 
-	@Override
-	public String get() {
-		return this.value;
+	public DynamicStringProperty() {
+		super(null);
 	}
-	
+
 	public void set(String value) {
-		this.value = value;
-		this.listenerSupport.dispatchEvent(l -> l.propertyChanged(value));
+		setValue(value);
 	}
-	
-	@Override
-	public void setValue(String value) {
-		set(value);
-	}
-	
+
 	@Override
 	public String toString() {
-		return this.value;
+		return getCurrentValue();
 	}
 
-	@Override
-	public void addListener(DynamicPropertyListener<String> listener) {
-		listenerSupport.addListener(listener);
-	}
-
-	@Override
-	public void removeListener(DynamicPropertyListener<String> listener) {
-		listenerSupport.removeListener(listener);
-	}
-	
 }
