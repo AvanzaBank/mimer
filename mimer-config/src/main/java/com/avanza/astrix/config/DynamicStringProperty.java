@@ -30,6 +30,11 @@ public final class DynamicStringProperty extends AbstractDynamicProperty<String>
 		super(null);
 	}
 
+	@Override
+	public String get() {
+		return super.get();
+	}
+
 	public void set(String value) {
 		setValue(value);
 	}
