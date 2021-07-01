@@ -30,6 +30,13 @@ public final class DynamicStringProperty extends AbstractDynamicProperty<String>
 		super(null);
 	}
 
+	// Overridden for binary backward compatibility
+	@Override
+	public String getCurrentValue() {
+		return super.getCurrentValue();
+	}
+
+	// Overridden for binary backward compatibility
 	@Override
 	public String get() {
 		return super.get();
@@ -37,6 +44,12 @@ public final class DynamicStringProperty extends AbstractDynamicProperty<String>
 
 	public void set(String value) {
 		setValue(value);
+	}
+
+	// Overridden for binary backward compatibility
+	@Override
+	public void setValue(String value) {
+		super.setValue(value);
 	}
 
 	@Override
