@@ -15,14 +15,18 @@
  */
 package com.avanza.astrix.config;
 
-
-import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
-
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+
+import org.junit.jupiter.api.Test;
 
 class MapConfigSourceTest {
 
@@ -65,4 +69,33 @@ class MapConfigSourceTest {
 		assertThat(source.get("property3"), equalTo("value3"));
 	}
 
+	@Test
+	void shouldGetNewDefaultValuesEachTime() {
+		// Arrange
+		final DynamicConfig dynamicConfig = DynamicConfig.create(new MapConfigSource());
+
+		// Act
+		final String v1 = dynamicConfig.getStringProperty("key", "first-default").get();
+		final String v2 = dynamicConfig.getStringProperty("key", "second-default").get();
+
+		// Assert
+		assertThat(v1, equalTo("first-default"));
+		assertThat(v2, equalTo("second-default"));
+	}
+
+	@Test
+	void shouldGetNewDefaultValuesEachTimeForIntListProperties() {
+		// Arrange
+		final DynamicConfig dynamicConfig = DynamicConfig.create(new MapConfigSource());
+
+		// Act
+		final DynamicListProperty<Integer> emptyList1 = dynamicConfig.getIntListProperty("key", Collections.emptyList());
+		final DynamicListProperty<Integer> emptyList2 = dynamicConfig.getIntListProperty("key", new ArrayList<>());
+		final DynamicListProperty<Integer> list = dynamicConfig.getIntListProperty("key", Arrays.asList(1, 2));
+
+		// Assert
+		assertThat(emptyList1, sameInstance(emptyList2));
+		assertThat(emptyList1.get(), equalTo(Collections.emptyList()));
+		assertThat(list.get(), containsInAnyOrder(1, 2));
+	}
 }

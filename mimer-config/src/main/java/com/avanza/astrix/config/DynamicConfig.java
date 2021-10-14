@@ -151,7 +151,7 @@ public final class DynamicConfig {
 	}
 
 	private <T, P extends DynamicProperty<T>> P getProperty(String name, Class<P> propertyType, T defaultValue, PropertyParser<T> propertyParser) {
-		return getOrCreate(propertyType, name, () ->
+		return getOrCreate(propertyType, name, defaultValue, () ->
 				bindPropertyToConfigurationSources(name, propertyType.getDeclaredConstructor().newInstance(), defaultValue, propertyParser));
 	}
 
@@ -210,8 +210,8 @@ public final class DynamicConfig {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends DynamicProperty<?>> T getOrCreate(Class<T> type, String name, Callable<T> objectFactory) {
-		return (T) configCache.computeIfAbsent(new CacheKey<>(type, name), key -> {
+	private <T extends DynamicProperty<?>> T getOrCreate(Class<T> type, String name, Object defaultValue, Callable<T> objectFactory) {
+		return (T) configCache.computeIfAbsent(new CacheKey<>(type, name, defaultValue), key -> {
 			try {
 				return objectFactory.call();
 			} catch (RuntimeException exception) {
@@ -225,10 +225,12 @@ public final class DynamicConfig {
 	private static final class CacheKey<T> {
 		private final Class<T> type;
 		private final String name;
+		private final Object defaultValue;
 
-		public CacheKey(Class<T> type, String name) {
+		public CacheKey(Class<T> type, String name, Object defaultValue) {
 			this.type = requireNonNull(type);
 			this.name = name.intern();
+			this.defaultValue = defaultValue;
 		}
 
 		@Override
@@ -240,13 +242,14 @@ public final class DynamicConfig {
 				return false;
 			}
 			CacheKey<?> cacheKey = (CacheKey<?>) other;
-			return type.equals(cacheKey.type) && name.equals(cacheKey.name);
+			return type.equals(cacheKey.type)
+					&& name.equals(cacheKey.name)
+					&& Objects.equals(defaultValue, cacheKey.defaultValue);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(type, name);
+			return Objects.hash(type, name, defaultValue);
 		}
 	}
-
 }
