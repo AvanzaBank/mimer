@@ -78,8 +78,9 @@ final class DynamicPropertyChain<T> implements DynamicPropertyListener<DynamicCo
 
 	@Override
 	public void propertyChanged(DynamicConfigProperty<T> updatedProperty) {
-		if (this.propertyChainListener != null) {
-			this.propertyChainListener.propertyChanged();
+		PropertyChangeEventDispatcher propertyChainListener = this.propertyChainListener;
+		if (propertyChainListener != null) {
+			propertyChainListener.propertyChanged();
 		}
 	}
 
