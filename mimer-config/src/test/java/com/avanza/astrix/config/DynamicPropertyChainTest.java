@@ -36,13 +36,13 @@ class DynamicPropertyChainTest {
 	private final DynamicPropertyChain<String> propertyChain = DynamicPropertyChain.createWithDefaultValue(DEFAULT_VALUE, new PropertyParser.StringParser());
 	
 	@Test
-	void listenerIsNotifiedWithDefaultValueWhenRegisteredIfNoPropertiesExistsInChain() throws Exception {
+	void listenerIsNotifiedWithDefaultValueWhenRegisteredIfNoPropertiesExistsInChain() {
 		propertyChain.bindTo(listener);
 		assertEquals(DEFAULT_VALUE, propertyChanges.poll());
 	}
 	
 	@Test
-	void listenerIsRegisteredWithNewValueWhenDynamicPropertyIsSet() throws Exception {
+	void listenerIsRegisteredWithNewValueWhenDynamicPropertyIsSet() {
 		DynamicConfigProperty<String> dynamicProperty = propertyChain.appendValue();
 		propertyChain.bindTo(listener);
 		assertEquals(DEFAULT_VALUE, propertyChanges.poll());
@@ -51,7 +51,7 @@ class DynamicPropertyChainTest {
 	}
 	
 	@Test
-	void chainReturnsToDefaultValueWhenAllPropertiesInChainAreNull() throws Exception {
+	void chainReturnsToDefaultValueWhenAllPropertiesInChainAreNull() {
 		DynamicConfigProperty<String> dynamicProperty = propertyChain.appendValue();
 		propertyChain.bindTo(listener);
 		assertEquals(DEFAULT_VALUE, propertyChanges.poll());
@@ -64,7 +64,7 @@ class DynamicPropertyChainTest {
 	}
 	
 	@Test
-	void resolvesPropertyInOrder() throws Exception {
+	void resolvesPropertyInOrder() {
 		DynamicConfigProperty<String> firstPropertyInChain = propertyChain.appendValue();
 		DynamicConfigProperty<String> secondPropertyInChain = propertyChain.appendValue();
 		propertyChain.bindTo(listener);
@@ -82,7 +82,7 @@ class DynamicPropertyChainTest {
 	}
 	
 	@Test
-	void notifiesListener() throws Exception {
+	void notifiesListener() {
 		DynamicConfigProperty<String> firstPropertyInChain = propertyChain.appendValue();
 		DynamicConfigProperty<String> secondPropertyInChain = propertyChain.appendValue();
 		propertyChain.bindTo(listener);
@@ -99,7 +99,7 @@ class DynamicPropertyChainTest {
 	}
 	
 	@Test
-	void listenerShouldOnlyBeNotifiedWhenUnderlyingPropertyActuallyChanges() throws Exception {
+	void listenerShouldOnlyBeNotifiedWhenUnderlyingPropertyActuallyChanges() {
 		DynamicConfigProperty<String> firstPropertyInChain = propertyChain.appendValue();
 		DynamicConfigProperty<String> secondPropertyInChain = propertyChain.appendValue();
 		propertyChain.bindTo(listener);
@@ -116,7 +116,7 @@ class DynamicPropertyChainTest {
 	}
 	
 	@Test
-	void listenerShouldBeNotifiedWithNewValueWhenCurrentResolvedConfigurationPropertyIsClearedAndPropertyWithLowerPrecedenceExists() throws Exception {
+	void listenerShouldBeNotifiedWithNewValueWhenCurrentResolvedConfigurationPropertyIsClearedAndPropertyWithLowerPrecedenceExists() {
 		DynamicConfigProperty<String> firstPropertyInChain = propertyChain.appendValue();
 		DynamicConfigProperty<String> secondPropertyInChain = propertyChain.appendValue();
 		propertyChain.bindTo(listener);
@@ -136,7 +136,7 @@ class DynamicPropertyChainTest {
 	}
 	
 	@Test
-	void getsNotifiedAboutResolvedValueWhenSetBeforeRegisteringListener() throws Exception {
+	void getsNotifiedAboutResolvedValueWhenSetBeforeRegisteringListener() {
 		DynamicConfigProperty<String> propertyInChain = propertyChain.appendValue();
 		propertyInChain.set("2");
 		

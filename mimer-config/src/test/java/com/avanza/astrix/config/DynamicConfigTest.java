@@ -42,7 +42,7 @@ class DynamicConfigTest {
 	private final DynamicConfig dynamicConfig = new DynamicConfig(Arrays.asList(firstSource, secondSource));
 
 	@Test
-	void propertyIsResolvedToFirstOccurrenceInConfigSources() throws Exception {
+	void propertyIsResolvedToFirstOccurrenceInConfigSources() {
 		DynamicStringProperty stringProperty = dynamicConfig.getStringProperty("foo", "defaultFoo");
 
 		secondSource.set("foo", "secondValue");
@@ -56,7 +56,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void propertyValueReturnsToDefaultValueWhenConfigSourceValueIsRemoved() throws Exception {
+	void propertyValueReturnsToDefaultValueWhenConfigSourceValueIsRemoved() {
 		DynamicStringProperty stringProperty = dynamicConfig.getStringProperty("foo", "defaultFoo");
 
 		firstSource.set("foo", "firstValue");
@@ -68,7 +68,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void booleanProperty() throws Exception {
+	void booleanProperty() {
 		DynamicBooleanProperty booleanProperty = dynamicConfig.getBooleanProperty("foo", false);
 
 		secondSource.set("foo", "true");
@@ -79,7 +79,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void intProperty() throws Exception {
+	void intProperty() {
 		DynamicIntProperty intProperty = dynamicConfig.getIntProperty("foo", 0);
 		assertEquals(0, intProperty.get());
 
@@ -107,7 +107,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void stringListProperty() throws Exception {
+	void stringListProperty() {
 		DynamicListProperty<String> property = dynamicConfig.getStringListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
 
@@ -122,7 +122,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void intListProperty() throws Exception {
+	void intListProperty() {
 		DynamicListProperty<Integer> property = dynamicConfig.getIntListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
 
@@ -140,7 +140,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void longListProperty() throws Exception {
+	void longListProperty() {
 		DynamicListProperty<Long> property = dynamicConfig.getLongListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
 
@@ -158,7 +158,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void booleanListProperty() throws Exception {
+	void booleanListProperty() {
 		DynamicListProperty<Boolean> property = dynamicConfig.getBooleanListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
 
@@ -194,7 +194,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void unparsableBooleanPropertiesAreIgnored() throws Exception {
+	void unparsableBooleanPropertiesAreIgnored() {
 		DynamicBooleanProperty booleanProperty = dynamicConfig.getBooleanProperty("foo", false);
 
 		secondSource.set("foo", "true");
@@ -217,7 +217,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void unparsableIntPropertiesAreIgnored() throws Exception {
+	void unparsableIntPropertiesAreIgnored() {
 		DynamicIntProperty intProperty = dynamicConfig.getIntProperty("foo", 0);
 
 		secondSource.set("foo", "2d");
@@ -231,7 +231,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void merge() throws Exception {
+	void merge() {
 		MapConfigSource thirdSource = new MapConfigSource();
 		DynamicConfig dynamicConfigB = new DynamicConfig(singletonList(thirdSource));
 
@@ -250,7 +250,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void propertyListenerSupport_StringType() throws Exception {
+	void propertyListenerSupport_StringType() {
 		firstSource.set("foo", "1");
 		secondSource.set("foo", "2");
 		Queue<String> events = new LinkedBlockingQueue<>();
@@ -270,7 +270,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void propertyListenerSupport_IntType() throws Exception {
+	void propertyListenerSupport_IntType() {
 		firstSource.set("intProp", "1");
 		DynamicIntProperty prop = dynamicConfig.getIntProperty("intProp", 0);
 		Queue<Integer> events = new LinkedBlockingQueue<>();
@@ -284,7 +284,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void propertyListenerSupport_LongType() throws Exception {
+	void propertyListenerSupport_LongType() {
 		firstSource.set("longProp", "1");
 		DynamicLongProperty prop = dynamicConfig.getLongProperty("longProp", 0);
 		Queue<Long> events = new LinkedBlockingQueue<>();
@@ -298,7 +298,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void propertyListenerSupport_BooleanType() throws Exception {
+	void propertyListenerSupport_BooleanType() {
 		firstSource.set("booleanProp", "true");
 		DynamicBooleanProperty prop = dynamicConfig.getBooleanProperty("booleanProp", false);
 		Queue<Boolean> events = new LinkedBlockingQueue<>();
@@ -312,7 +312,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void globalPropertyListenerIsNotifiedWhenNewPropertyIsCreated() throws Exception {
+	void globalPropertyListenerIsNotifiedWhenNewPropertyIsCreated() {
 		firstSource.set("booleanProp", "true");
 		DynamicBooleanProperty prop = dynamicConfig.getBooleanProperty("booleanProp", false);
 		Queue<Boolean> events = new LinkedBlockingQueue<>();
@@ -326,7 +326,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void globalConfigListenerSupport_PropertyCreatedEvents() throws Exception {
+	void globalConfigListenerSupport_PropertyCreatedEvents() {
 		class Prop {
 			private final String name;
 			private final Object val;
@@ -363,7 +363,7 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void globalConfigListenerSupport_PropertyUpdateEvents() throws Exception {
+	void globalConfigListenerSupport_PropertyUpdateEvents() {
 		class Prop {
 			private final String name;
 			private final Object val;

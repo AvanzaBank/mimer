@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 class DynamicPropertyListenerTest {
 	
 	@Test
-	void intPropertyListenersAreNotifiedWhenPropertySet() throws Exception {
+	void intPropertyListenersAreNotifiedWhenPropertySet() {
 		PropertySpy<Integer> propertySpy = new PropertySpy<>();
 		DynamicIntProperty prop = new DynamicIntProperty(1);
 		prop.addListener(propertySpy);
@@ -38,7 +38,7 @@ class DynamicPropertyListenerTest {
 	}
 	
 	@Test
-	void intPropertyDoesNotNotifyUnsubscribedListeners() throws Exception {
+	void intPropertyDoesNotNotifyUnsubscribedListeners() {
 		DynamicIntProperty prop = new DynamicIntProperty(1);
 		PropertySpy<Integer> propertySpy = new PropertySpy<>();
 		prop.addListener(propertySpy);
@@ -52,7 +52,7 @@ class DynamicPropertyListenerTest {
 	}
 	
 	@Test
-	void booleanPropertyListenersAreNotifiedWhenPropertySet() throws Exception {
+	void booleanPropertyListenersAreNotifiedWhenPropertySet() {
 		PropertySpy<Boolean> propertySpy = new PropertySpy<>();
 		DynamicBooleanProperty prop = new DynamicBooleanProperty(false);
 		prop.addListener(propertySpy);
@@ -63,7 +63,7 @@ class DynamicPropertyListenerTest {
 	}
 	
 	@Test
-	void booleanPropertyDoesNotNotifyUnsubscribedListeners() throws Exception {
+	void booleanPropertyDoesNotNotifyUnsubscribedListeners() {
 		PropertySpy<Boolean> propertySpy = new PropertySpy<>();
 		DynamicBooleanProperty prop = new DynamicBooleanProperty(false);
 		prop.addListener(propertySpy);
@@ -76,7 +76,7 @@ class DynamicPropertyListenerTest {
 	}
 	
 	@Test
-	void longPropertyListenersAreNotifiedWhenPropertySet() throws Exception {
+	void longPropertyListenersAreNotifiedWhenPropertySet() {
 		PropertySpy<Long> propertySpy = new PropertySpy<>();
 		DynamicLongProperty prop = new DynamicLongProperty(1);
 		prop.addListener(propertySpy);
@@ -87,7 +87,7 @@ class DynamicPropertyListenerTest {
 	}
 	
 	@Test
-	void longPropertyDoesNotNotifyUnsubscribedListeners() throws Exception {
+	void longPropertyDoesNotNotifyUnsubscribedListeners() {
 		PropertySpy<Long> propertySpy = new PropertySpy<>();
 		DynamicLongProperty prop = new DynamicLongProperty(1);
 		prop.addListener(propertySpy);
@@ -100,7 +100,7 @@ class DynamicPropertyListenerTest {
 	}
 	
 	@Test
-	void stringPropertyListenersAreNotifiedWhenPropertySet() throws Exception {
+	void stringPropertyListenersAreNotifiedWhenPropertySet() {
 		PropertySpy<String> propertySpy = new PropertySpy<>();
 		DynamicStringProperty prop = new DynamicStringProperty("1");
 		prop.addListener(propertySpy);
@@ -111,7 +111,7 @@ class DynamicPropertyListenerTest {
 	}
 	
 	@Test
-	void stringPropertyDoesNotNotifyUnsubscribedListeners() throws Exception {
+	void stringPropertyDoesNotNotifyUnsubscribedListeners() {
 		PropertySpy<String> propertySpy = new PropertySpy<>();
 		DynamicStringProperty prop = new DynamicStringProperty("1");
 		prop.addListener(propertySpy);
@@ -124,14 +124,14 @@ class DynamicPropertyListenerTest {
 	}
 
 	@Test
-	void propertyListenerErrorDoesNotPropagate() throws Exception {
+	void propertyListenerErrorDoesNotPropagate() {
 		DynamicIntProperty prop = new DynamicIntProperty(1);
 		prop.addListener(new ThrowingListener<>());
 		prop.set(2);
 	}
 
 	@Test
-	void propertyListenerNotifiedWhenFirstListenerFails() throws Exception {
+	void propertyListenerNotifiedWhenFirstListenerFails() {
 		PropertySpy<Integer> propertySpy = new PropertySpy<>();
 		DynamicIntProperty prop = new DynamicIntProperty(1);
 		prop.addListener(new ThrowingListener<>());

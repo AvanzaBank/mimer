@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 class MapConfigSourceTest {
 
 	@Test
-	void shouldCreateFromMap() throws Exception {
+	void shouldCreateFromMap() {
 		MapConfigSource source = MapConfigSource.of(new HashMap<String, Object>() {{
 			put("property1", "value1");
 			put("property2", "value2");
@@ -39,7 +39,7 @@ class MapConfigSourceTest {
 	}
 
 	@Test
-	void shouldCreateFromKeyValuePair() throws Exception {
+	void shouldCreateFromKeyValuePair() {
 		MapConfigSource source = MapConfigSource.of("property1", "value1");
 
 		assertThat(source.get("property1"), equalTo("value1"));
@@ -47,7 +47,7 @@ class MapConfigSourceTest {
 	}
 
 	@Test
-	void shouldCreateFromMapEntries() throws Exception {
+	void shouldCreateFromMapEntries() {
 		MapConfigSource source = MapConfigSource.of(new SimpleImmutableEntry<>("property1", "value1"), new SimpleImmutableEntry<>("property2", "value2"));
 
 		assertThat(source.get("property1"), equalTo("value1"));
