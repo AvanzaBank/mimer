@@ -16,12 +16,16 @@
 package com.avanza.astrix.config;
 
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * This is an abstraction for a hierarchical set of configuration sources. Each property is resolved
@@ -36,7 +40,7 @@ import java.util.Set;
  */
 public final class DynamicConfig {
 
-	private final ObjectCache configCache = new ObjectCache();
+	private final ConcurrentMap<String, DynamicProperty<?>> configCache = new ConcurrentHashMap<>();
 	private final List<DynamicConfigSource> configSources;
 	private final ListenerSupport<DynamicConfigListener> dynamicConfigListenerSupport = new ListenerSupport<>();
 
@@ -44,13 +48,15 @@ public final class DynamicConfig {
 		this(singletonList(configSource));
 	}
 
+	public DynamicConfig(List<? extends ConfigSource> configSources) {
+		this.configSources = configSources.stream()
+				.map(configSource -> configSource instanceof DynamicConfigSource ? (DynamicConfigSource) configSource : new DynamicConfigSourceAdapter(configSource))
+				.collect(toList());
+	}
+
 	/**
 	 * Creates a {@link DynamicConfig} instance resolving configuration properties using
 	 * the defined set of {@link ConfigSource}'s (possibly {@link DynamicConfigSource}). <p>
-	 *
-	 * @param first
-	 * @param other
-	 * @return
 	 */
 	public static DynamicConfig create(ConfigSource first, ConfigSource... other) {
 		List<ConfigSource> sources = new LinkedList<>();
@@ -59,20 +65,8 @@ public final class DynamicConfig {
 		return new DynamicConfig(sources);
 	}
 
-
 	public static DynamicConfig create(List<? extends ConfigSource> sources) {
 		return new DynamicConfig(sources);
-	}
-
-	public DynamicConfig(List<? extends ConfigSource> configSources) {
-		this.configSources = new ArrayList<>(configSources.size());
-		for (ConfigSource configSource : configSources) {
-			if (configSource instanceof DynamicConfigSource) {
-				this.configSources.add((DynamicConfigSource) configSource);
-			} else {
-				this.configSources.add(new DynamicConfigSourceAdapter(configSource));
-			}
-		}
 	}
 
 	private static class DynamicConfigSourceAdapter extends AbstractDynamicConfigSource {
@@ -94,9 +88,6 @@ public final class DynamicConfig {
 
 	/**
 	 * Reads a property of String type.
-	 * 
-	 * @param name
-	 * @return
 	 */
 	public DynamicStringProperty getStringProperty(String name, String defaultValue) {
 		return getProperty(name, DynamicStringProperty.class, defaultValue, PropertyParser.STRING_PARSER);
@@ -145,7 +136,7 @@ public final class DynamicConfig {
 	}
 
 	private <T, P extends DynamicProperty<T>> P getProperty(String name, Class<P> propertyType, T defaultValue, PropertyParser<T> propertyParser) {
-		return this.configCache.getInstance(propertyType.getSimpleName() + "." + name,
+		return getOrCreate(propertyType.getSimpleName() + "." + name,
 				() -> bindPropertyToConfigurationSources(name, propertyType.getDeclaredConstructor().newInstance(), defaultValue, propertyParser));
 	}
 
@@ -196,13 +187,24 @@ public final class DynamicConfig {
 	 * from this instance changes.
 	 * 
 	 * The listener receives a "propertyCreated" each time a new property
-	 * is created in this {@link DynamicConfig} instance (i.e the first time
+	 * is created in this {@link DynamicConfig} instance (i.e. the first time
 	 * a property with a given name is read).
-	 * 
-	 * @param l
 	 */
 	public void addListener(DynamicConfigListener l) {
 		this.dynamicConfigListenerSupport.addListener(l);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends DynamicProperty<?>> T getOrCreate(String key, Callable<T> objectFactory) {
+		return (T) configCache.computeIfAbsent(key, ignore -> {
+			try {
+				return  objectFactory.call();
+			} catch(RuntimeException exception) {
+				throw exception;
+			} catch(Exception exception) {
+				throw new RuntimeException(exception);
+			}
+		});
 	}
 
 }

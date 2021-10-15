@@ -15,23 +15,43 @@
  */
 package com.avanza.astrix.config;
 
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MapConfigSourceTest {
+class MapConfigSourceTest {
 
 	@Test
-	public void shouldCreateFromMap() throws Exception {		
+	void shouldCreateFromMap() throws Exception {
 		MapConfigSource source = MapConfigSource.of(new HashMap<String, Object>() {{
 			put("property1", "value1");
 			put("property2", "value2");
 		}});
+
 		assertThat(source.get("property1"), equalTo("value1"));
 		assertThat(source.get("property2"), equalTo("value2"));
 	}
-	
+
+	@Test
+	void shouldCreateFromKeyValuePair() throws Exception {
+		MapConfigSource source = MapConfigSource.of("property1", "value1");
+
+		assertThat(source.get("property1"), equalTo("value1"));
+		assertThat(source.get("property2"), nullValue());
+	}
+
+	@Test
+	void shouldCreateFromMapEntries() throws Exception {
+		MapConfigSource source = MapConfigSource.of(new SimpleImmutableEntry<>("property1", "value1"), new SimpleImmutableEntry<>("property2", "value2"));
+
+		assertThat(source.get("property1"), equalTo("value1"));
+		assertThat(source.get("property2"), equalTo("value2"));
+	}
+
 }

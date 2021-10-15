@@ -31,7 +31,6 @@ public interface DynamicPropertyListener<T> {
 	 * of the {@link DynamicProperty}, typically some thread internal to a
 	 * {@link DynamicConfigSource} implementation.
 	 * 
-	 * @param newValue
 	 */
 	void propertyChanged(T newValue);
 

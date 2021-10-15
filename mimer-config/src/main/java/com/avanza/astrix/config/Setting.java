@@ -30,8 +30,6 @@ public interface Setting<T> {
 	
 	/**
 	 * The name of this Setting. Used when reading this Setting from a DynamicConfig instance. <p>
-	 *  
-	 * @return
 	 */
 	String name();
 	
@@ -53,7 +51,6 @@ public interface Setting<T> {
 	 * For settings of primitive types this method
 	 * returns the boxed version of the given type,
 	 * and never returns null.
-	 * @return
 	 */
 	T defaultValue();
 	

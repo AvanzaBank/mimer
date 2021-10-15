@@ -30,7 +30,6 @@ public interface DynamicConfigSource extends ConfigSource {
 	 * Returns a configuration property from this configuration source. The {@link DynamicPropertyListener} 
 	 * will be updated about all changes to the underlying property. <p>
 	 * 
-	 * @param propertyName
 	 * @param propertyChangeListener - A listener that receives callback for each change in the underlying property value.
 	 * @return The current value of the given property, or null if no value exists right now
 	 */

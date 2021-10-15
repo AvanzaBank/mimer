@@ -29,8 +29,8 @@ final class DynamicConfigProperty<T> implements DynamicPropertyListener<String> 
 	private final Logger logger = LoggerFactory.getLogger(DynamicConfigProperty.class);
 	private final DynamicPropertyListener<DynamicConfigProperty<T>> propertyChangeListener;
 	private final PropertyParser<T> parser;
-	private volatile T value;
-	
+	private volatile T value = null;
+
 	private DynamicConfigProperty(DynamicPropertyListener<DynamicConfigProperty<T>> propertyChangeListener, PropertyParser<T> propertyParser) {
 		this.propertyChangeListener = propertyChangeListener;
 		this.parser = propertyParser;
@@ -44,7 +44,7 @@ final class DynamicConfigProperty<T> implements DynamicPropertyListener<String> 
 		return this.value != null;
 	}
 	
-	public final void set(String value) {
+	public void set(String value) {
 		try {
 			if (value != null) {
 				this.value = parser.parse(value);
@@ -53,7 +53,7 @@ final class DynamicConfigProperty<T> implements DynamicPropertyListener<String> 
 			}
 			propertyChangeListener.propertyChanged(this);
 		} catch (Exception e) {
-			logger.error("Failed to parse: " + value, e);
+			logger.error("Failed to parse: {}", value, e);
 		}
 	}
 	

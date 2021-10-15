@@ -15,7 +15,9 @@
  */
 package com.avanza.astrix.config;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -33,10 +35,23 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 	public MapConfigSource() {
 	}
 
+	@SafeVarargs
+	public static MapConfigSource of(Entry<String, ?>... entries) {
+		MapConfigSource configSource = new MapConfigSource();
+		for (Entry<String, ?> entry : entries) {
+			configSource.set(entry.getKey(), entry.getValue().toString());
+		}
+		return configSource;
+	}
+
 	public static MapConfigSource of(Map<String, ?> source) {
 		MapConfigSource configSource = new MapConfigSource();
 		source.forEach((key, value) -> configSource.set(key, value.toString()));
 		return configSource;
+	}
+
+	public static MapConfigSource of(String key, Object value) {
+		return of(new SimpleImmutableEntry<>(key, value));
 	}
 
 	@Override

@@ -15,8 +15,9 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class PropertiesConfigSource implements ConfigSource {
 	private final Properties properties;
 
 	public PropertiesConfigSource(Properties properties) {
-		this.properties = Objects.requireNonNull(properties);
+		this.properties = requireNonNull(properties);
 	}
 
 	@Override
@@ -44,15 +45,15 @@ public class PropertiesConfigSource implements ConfigSource {
 
 	public static ConfigSource optionalClasspathPropertiesFile(String fileName) {
 		Properties classpathOverride = new Properties();
-		try {
-			InputStream resourceAsStream = PropertiesConfigSource.class.getClassLoader().getResourceAsStream(fileName);
+		try (InputStream resourceAsStream = PropertiesConfigSource.class.getClassLoader().getResourceAsStream(fileName)) {
 			if (resourceAsStream == null) {
-				log.info("Optional config properties file not present on classpath: " + fileName + "");
+				log.info("Optional config properties file not present on classpath: {}", fileName);
 				return new PropertiesConfigSource(classpathOverride);
+			} else {
+				classpathOverride.load(resourceAsStream);
 			}
-			classpathOverride.load(resourceAsStream);
 		} catch (Exception e) {
-			log.warn("Failed to load config properties from file: " + fileName);
+			log.warn("Failed to load config properties from file: {}", fileName);
 		}
 		return new PropertiesConfigSource(classpathOverride);
 	}
