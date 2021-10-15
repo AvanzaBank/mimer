@@ -47,6 +47,10 @@ interface PropertyParser<T> {
 		return new SetParser<>(enumParser(enumClass));
 	}
 
+	static <T extends Enum<T>> PropertyParser<List<T>> enumListParser(Class<T> enumClass) {
+		return new ListParser<>(enumParser(enumClass));
+	}
+
 	T parse(String value);
 
 	class BooleanParser implements PropertyParser<Boolean> {
