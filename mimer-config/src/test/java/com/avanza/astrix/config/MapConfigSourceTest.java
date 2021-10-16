@@ -16,14 +16,13 @@
 package com.avanza.astrix.config;
 
 
+import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
-
-import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.HashMap;
-
-import org.junit.jupiter.api.Test;
 
 class MapConfigSourceTest {
 
@@ -39,7 +38,7 @@ class MapConfigSourceTest {
 	}
 
 	@Test
-	void shouldCreateFromKeyValuePair() {
+	void shouldCreateFromSingleKeyValuePair() {
 		MapConfigSource source = MapConfigSource.of("property1", "value1");
 
 		assertThat(source.get("property1"), equalTo("value1"));
@@ -47,11 +46,23 @@ class MapConfigSourceTest {
 	}
 
 	@Test
-	void shouldCreateFromMapEntries() {
-		MapConfigSource source = MapConfigSource.of(new SimpleImmutableEntry<>("property1", "value1"), new SimpleImmutableEntry<>("property2", "value2"));
+	void shouldCreateFromTwoKeyValuePairs() {
+		MapConfigSource source = MapConfigSource.of("property1", "value1",
+													"property2", "value2");
 
 		assertThat(source.get("property1"), equalTo("value1"));
 		assertThat(source.get("property2"), equalTo("value2"));
+	}
+
+	@Test
+	void shouldCreateFromThreeKeyValuePairs() {
+		MapConfigSource source = MapConfigSource.of("property1", "value1",
+													"property2", "value2",
+													"property3", "value3");
+
+		assertThat(source.get("property1"), equalTo("value1"));
+		assertThat(source.get("property2"), equalTo("value2"));
+		assertThat(source.get("property3"), equalTo("value3"));
 	}
 
 }
