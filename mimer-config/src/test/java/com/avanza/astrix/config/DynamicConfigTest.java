@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -107,6 +108,28 @@ class DynamicConfigTest {
 	}
 
 	@Test
+	void optionalStringProperty() {
+		DynamicOptionalProperty<String> optionalStringProperty = dynamicConfig.getOptionalStringProperty("foo");
+
+		firstSource.set("foo", "firstValue");
+		assertEquals(Optional.of("firstValue"), optionalStringProperty.get());
+
+		firstSource.set("foo", null);
+		assertEquals(Optional.empty(), optionalStringProperty.get());
+	}
+
+	@Test
+	void optionalEnumProperty() {
+		DynamicOptionalProperty<MyEnum> optionalEnumProperty = dynamicConfig.getOptionalEnumProperty("myEnum", MyEnum.class);
+
+		firstSource.set("myEnum", "FIRST");
+		assertEquals(Optional.of(MyEnum.FIRST), optionalEnumProperty.get());
+
+		firstSource.set("myEnum", null);
+		assertEquals(Optional.empty(), optionalEnumProperty.get());
+	}
+
+	@Test
 	void stringListProperty() {
 		DynamicListProperty<String> property = dynamicConfig.getStringListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
@@ -172,6 +195,24 @@ class DynamicConfigTest {
 		assertThat(property.get(), empty());
 
 		firstSource.set("foo", "unparseable value,false, true");
+		assertThat(property.get(), empty());
+	}
+
+	@Test
+	void enumListProperty() {
+		DynamicListProperty<MyEnum> property = dynamicConfig.getEnumListProperty("myEnumSet", MyEnum.class, emptyList());
+		assertThat(property.get(), empty());
+
+		secondSource.set("myEnumSet", "first,  tHiRd, SECOND  ");
+		assertThat(property.get(), contains(MyEnum.FIRST, MyEnum.THIRD, MyEnum.SECOND));
+
+		firstSource.set("myEnumSet", "FIRST");
+		assertEquals(singletonList(MyEnum.FIRST), property.get());
+
+		firstSource.set("myEnumSet", "");
+		assertThat(property.get(), empty());
+
+		firstSource.set("myEnumSet", "unparseable value,second, FIRST");
 		assertThat(property.get(), empty());
 	}
 

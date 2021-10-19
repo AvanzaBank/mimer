@@ -93,6 +93,10 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicStringProperty.class, defaultValue, PropertyParser.STRING_PARSER);
 	}
 
+	public DynamicOptionalProperty<String> getOptionalStringProperty(String name) {
+		return new DynamicOptionalProperty<>(getStringProperty(name, null));
+	}
+
 	public DynamicBooleanProperty getBooleanProperty(String name, boolean defaultValue) {
 		return getProperty(name, DynamicBooleanProperty.class, defaultValue, PropertyParser.BOOLEAN_PARSER);
 	}
@@ -108,6 +112,10 @@ public final class DynamicConfig {
 	@SuppressWarnings("unchecked")
 	public <T extends Enum<T>> DynamicEnumProperty<T> getEnumProperty(String name, Class<T> enumClass, T defaultValue) {
 		return getProperty(name, DynamicEnumProperty.class, defaultValue, PropertyParser.enumParser(enumClass));
+	}
+
+	public <T extends Enum<T>> DynamicOptionalProperty<T> getOptionalEnumProperty(String name, Class<T> enumClass) {
+		return new DynamicOptionalProperty<>(getEnumProperty(name, enumClass, null));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -128,6 +136,11 @@ public final class DynamicConfig {
 	@SuppressWarnings("unchecked")
 	public DynamicListProperty<Boolean> getBooleanListProperty(String name, List<Boolean> defaultValue) {
 		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.BOOLEAN_LIST_PARSER);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends Enum<T>> DynamicListProperty<T> getEnumListProperty(String name, Class<T> enumClass, List<T> defaultValue) {
+		return getProperty(name, DynamicListProperty.class, defaultValue, PropertyParser.enumListParser(enumClass));
 	}
 
 	@SuppressWarnings("unchecked")
