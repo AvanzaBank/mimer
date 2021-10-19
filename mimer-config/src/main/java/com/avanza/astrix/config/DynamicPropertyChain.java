@@ -15,9 +15,9 @@
  */
 package com.avanza.astrix.config;
 
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * A DynamicPropertyChain is a hierarchical set of properties. A property
@@ -41,37 +41,33 @@ import java.util.Optional;
  * 
  * @author Elias Lindholm (elilin)
  *
- * @param <T>
  */
 final class DynamicPropertyChain<T> implements DynamicPropertyListener<DynamicConfigProperty<T>> {
 
-	private final LinkedList<DynamicConfigProperty<T>> chain = new LinkedList<>();
-	private volatile Optional<PropertyChangeEventDispatcher> propertyChainListener;
-	private final PropertyParser<T> parser;
+	private final Deque<DynamicConfigProperty<T>> chain = new LinkedList<>();
+	private volatile PropertyChangeEventDispatcher propertyChainListener = null;
 	private final T defaultValue;
-	
+	private final PropertyParser<T> parser;
+
 	private DynamicPropertyChain(T defaultValue, PropertyParser<T> parser) {
 		this.defaultValue = defaultValue;
 		this.parser = parser;
-		this.propertyChainListener = Optional.empty();
 	}
-	
+
 	/**
 	 * Binds the resolved value of this chain to a given listener. The listener will be
 	 * notified synchronously with the current resolved value of this property chain, and
-	 * will later receive a notification each time the resolved of this chain changes.
-	 * 
+	 * will later receive a notification each time the resolved value of this chain changes.
 	 */
 	void bindTo(DynamicPropertyChainListener<T> l) {
-		this.propertyChainListener = Optional.of(new PropertyChangeEventDispatcher(l));
-		this.propertyChainListener.ifPresent(PropertyChangeEventDispatcher::init);
+		this.propertyChainListener = new PropertyChangeEventDispatcher(l);
+		this.propertyChainListener.init();
 	}
-
 
 	static <T> DynamicPropertyChain<T> createWithDefaultValue(T defaultValue, PropertyParser<T> parser) {
 		return new DynamicPropertyChain<>(defaultValue, parser);
 	}
-	
+
 	private T get() {
 		return chain.stream()
 					.filter(DynamicConfigProperty::isSet)
@@ -82,19 +78,22 @@ final class DynamicPropertyChain<T> implements DynamicPropertyListener<DynamicCo
 
 	@Override
 	public void propertyChanged(DynamicConfigProperty<T> updatedProperty) {
-		this.propertyChainListener.ifPresent(PropertyChangeEventDispatcher::propertyChanged);
+		PropertyChangeEventDispatcher propertyChainListener = this.propertyChainListener;
+		if (propertyChainListener != null) {
+			propertyChainListener.propertyChanged();
+		}
 	}
-	
+
 	DynamicConfigProperty<T> appendValue() {
 		DynamicConfigProperty<T> property = DynamicConfigProperty.create(this, parser);
 		chain.addLast(property);
 		return property;
 	}
-	
+
 	private class PropertyChangeEventDispatcher {
 		private final DynamicPropertyChainListener<T> listener;
 		private T lastNotifiedState;
-		
+
 		public PropertyChangeEventDispatcher(DynamicPropertyChainListener<T> listener) {
 			this.listener = listener;
 		}
@@ -111,5 +110,5 @@ final class DynamicPropertyChain<T> implements DynamicPropertyListener<DynamicCo
 			}
 		}
 	}
-	
+
 }

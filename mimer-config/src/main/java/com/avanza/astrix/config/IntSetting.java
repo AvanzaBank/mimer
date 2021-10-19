@@ -15,6 +15,8 @@
  */
 package com.avanza.astrix.config;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * A Setting of int type, see {@link Setting} <p>
  * 
@@ -26,7 +28,7 @@ public class IntSetting implements Setting<Integer> {
 	private final int defaultValue;
 	
 	private IntSetting(String name, int defaultValue) {
-		this.name = name;
+		this.name = requireNonNull(name);
 		this.defaultValue = defaultValue;
 	}
 
@@ -44,6 +46,7 @@ public class IntSetting implements Setting<Integer> {
 		return name;
 	}
 	
+	@Override
 	public Integer defaultValue() {
 		return this.defaultValue;
 	}

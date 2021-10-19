@@ -15,20 +15,18 @@
  */
 package com.avanza.astrix.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
-import static java.util.Objects.requireNonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Elias Lindholm (elilin)
- *
- * @param <T>
  */
 final class ListenerSupport<T> {
 	
@@ -44,8 +42,8 @@ final class ListenerSupport<T> {
 		for (SubscribedListener subscribedListener : listeners) {
 			try {
 				eventNotification.accept(subscribedListener.listener);
-			} catch (Exception e) {
-				log.warn("Error when notifying listener {}", subscribedListener, e);
+			} catch (RuntimeException exception) {
+				log.warn("Error when notifying listener {}", subscribedListener, exception);
 			}
 		}
 	}
@@ -63,10 +61,11 @@ final class ListenerSupport<T> {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof ListenerSupport.SubscribedListener)) {
+			if (obj instanceof ListenerSupport<?>.SubscribedListener) {
+				return listener == ((ListenerSupport<?>.SubscribedListener) obj).listener;
+			} else {
 				return false;
 			}
-			return listener == SubscribedListener.class.cast(obj).listener;
 		}
 		
 		@Override

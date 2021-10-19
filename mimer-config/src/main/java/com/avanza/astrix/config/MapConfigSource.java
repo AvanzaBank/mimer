@@ -39,6 +39,30 @@ public class MapConfigSource extends AbstractDynamicConfigSource implements Muta
 		return configSource;
 	}
 
+	public static MapConfigSource of(String key, Object value) {
+		MapConfigSource configSource = new MapConfigSource();
+		configSource.set(key, value.toString());
+		return configSource;
+	}
+
+	public static MapConfigSource of(String key1, Object value1,
+									 String key2, Object value2) {
+		MapConfigSource configSource = new MapConfigSource();
+		configSource.set(key1, value1.toString());
+		configSource.set(key2, value2.toString());
+		return configSource;
+	}
+
+	public static MapConfigSource of(String key1, Object value1,
+									 String key2, Object value2,
+									 String key3, Object value3) {
+		MapConfigSource configSource = new MapConfigSource();
+		configSource.set(key1, value1.toString());
+		configSource.set(key2, value2.toString());
+		configSource.set(key3, value3.toString());
+		return configSource;
+	}
+
 	@Override
 	public String get(String propertyName, DynamicPropertyListener<String> propertyChangeListener) {
 		ListenableStringProperty dynamicProperty = getProperty(propertyName);

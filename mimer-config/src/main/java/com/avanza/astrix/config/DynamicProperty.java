@@ -23,8 +23,6 @@ package com.avanza.astrix.config;
  * instances decoupled from the underlying configuration sources. <p>
  * 
  * @author Elias Lindholm (elilin)
- *
- * @param <T>
  */
 public interface DynamicProperty<T> {
 	
@@ -37,9 +35,8 @@ public interface DynamicProperty<T> {
 	 * 
 	 * The listener will be notified synchronously on the same thread
 	 * that mutates the underlying property, so don't do any long-running
-	 * work on the thread thats notifies the {@link DynamicPropertyListener}.<p>
-	 * 
-	 * @param listener
+	 * work on the thread that notifies the {@link DynamicPropertyListener}.<p>
+	 *
 	 */
 	void addListener(DynamicPropertyListener<T> listener);
 	
@@ -47,16 +44,14 @@ public interface DynamicProperty<T> {
 	 * Removes a given listener. After remove the given listener will 
 	 * not receive events when this property is changed. 
 	 * 
-	 * @param listener
 	 */
 	void removeListener(DynamicPropertyListener<T> listener);
 
 	
 	/**
-	 * Returns the current value of this DynamicPropery. For primitive
+	 * Returns the current value of this DynamicProperty. For primitive
 	 * types the boxed version is returned (never null).
 	 * 
-	 * @return
 	 */
 	T getCurrentValue();
 	
@@ -64,8 +59,8 @@ public interface DynamicProperty<T> {
 	 * Sets the value of this DynamicProperty. If the underlying
 	 * property is a primitive type then this method throws 
 	 * {@link NullPointerException} when passing a null argument. All
-	 * other DynamicPropery types accepts null as a value.
-	 * @param value
+	 * other DynamicProperty types accepts null as a value.
+	 *
 	 */
 	void setValue(T value);
 	

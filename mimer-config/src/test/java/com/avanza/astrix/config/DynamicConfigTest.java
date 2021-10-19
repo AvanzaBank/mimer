@@ -22,22 +22,20 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-
-
-public class DynamicConfigTest {
+class DynamicConfigTest {
 
 
 	private final MapConfigSource firstSource = new MapConfigSource();
@@ -45,7 +43,7 @@ public class DynamicConfigTest {
 	private final DynamicConfig dynamicConfig = new DynamicConfig(Arrays.asList(firstSource, secondSource));
 
 	@Test
-	public void propertyIsResolvedToFirstOccurrenceInConfigSources() throws Exception {
+	void propertyIsResolvedToFirstOccurrenceInConfigSources() {
 		DynamicStringProperty stringProperty = dynamicConfig.getStringProperty("foo", "defaultFoo");
 
 		secondSource.set("foo", "secondValue");
@@ -59,7 +57,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void propertyValueReturnsToDefaultValueWhenConfigSourceValueIsRemoved() throws Exception {
+	void propertyValueReturnsToDefaultValueWhenConfigSourceValueIsRemoved() {
 		DynamicStringProperty stringProperty = dynamicConfig.getStringProperty("foo", "defaultFoo");
 
 		firstSource.set("foo", "firstValue");
@@ -71,7 +69,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void booleanProperty() throws Exception {
+	void booleanProperty() {
 		DynamicBooleanProperty booleanProperty = dynamicConfig.getBooleanProperty("foo", false);
 
 		secondSource.set("foo", "true");
@@ -82,7 +80,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void intProperty() throws Exception {
+	void intProperty() {
 		DynamicIntProperty intProperty = dynamicConfig.getIntProperty("foo", 0);
 		assertEquals(0, intProperty.get());
 
@@ -94,7 +92,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void enumProperty() {
+	void enumProperty() {
 		DynamicProperty<MyEnum> enumProperty = dynamicConfig.getEnumProperty("myEnum", MyEnum.class, MyEnum.FIRST);
 
 		assertEquals(MyEnum.FIRST, enumProperty.getCurrentValue());
@@ -110,7 +108,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void optionalStringProperty() throws Exception {
+	void optionalStringProperty() {
 		DynamicOptionalProperty<String> optionalStringProperty = dynamicConfig.getOptionalStringProperty("foo");
 
 		firstSource.set("foo", "firstValue");
@@ -121,7 +119,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void optionalEnumProperty() throws Exception {
+	void optionalEnumProperty() {
 		DynamicOptionalProperty<MyEnum> optionalEnumProperty = dynamicConfig.getOptionalEnumProperty("myEnum", MyEnum.class);
 
 		firstSource.set("myEnum", "FIRST");
@@ -132,7 +130,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void stringListProperty() throws Exception {
+	void stringListProperty() {
 		DynamicListProperty<String> property = dynamicConfig.getStringListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
 
@@ -147,7 +145,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void intListProperty() throws Exception {
+	void intListProperty() {
 		DynamicListProperty<Integer> property = dynamicConfig.getIntListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
 
@@ -165,7 +163,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void longListProperty() throws Exception {
+	void longListProperty() {
 		DynamicListProperty<Long> property = dynamicConfig.getLongListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
 
@@ -183,7 +181,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void booleanListProperty() throws Exception {
+	void booleanListProperty() {
 		DynamicListProperty<Boolean> property = dynamicConfig.getBooleanListProperty("foo", emptyList());
 		assertThat(property.get(), empty());
 
@@ -201,7 +199,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void enumListProperty() {
+	void enumListProperty() {
 		DynamicListProperty<MyEnum> property = dynamicConfig.getEnumListProperty("myEnumSet", MyEnum.class, emptyList());
 		assertThat(property.get(), empty());
 
@@ -219,7 +217,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void enumSetProperty() {
+	void enumSetProperty() {
 		DynamicSetProperty<MyEnum> property = dynamicConfig.getEnumSetProperty("myEnumSet", MyEnum.class, emptySet());
 		assertThat(property.get(), empty());
 
@@ -237,7 +235,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void unparsableBooleanPropertiesAreIgnored() throws Exception {
+	void unparsableBooleanPropertiesAreIgnored() {
 		DynamicBooleanProperty booleanProperty = dynamicConfig.getBooleanProperty("foo", false);
 
 		secondSource.set("foo", "true");
@@ -260,7 +258,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void unparsableIntPropertiesAreIgnored() throws Exception {
+	void unparsableIntPropertiesAreIgnored() {
 		DynamicIntProperty intProperty = dynamicConfig.getIntProperty("foo", 0);
 
 		secondSource.set("foo", "2d");
@@ -274,7 +272,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void merge() throws Exception {
+	void merge() {
 		MapConfigSource thirdSource = new MapConfigSource();
 		DynamicConfig dynamicConfigB = new DynamicConfig(singletonList(thirdSource));
 
@@ -293,7 +291,7 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void propertyListenerSupport_StringType() throws Exception {
+	void propertyListenerSupport_StringType() {
 		firstSource.set("foo", "1");
 		secondSource.set("foo", "2");
 		Queue<String> events = new LinkedBlockingQueue<>();
@@ -301,79 +299,79 @@ public class DynamicConfigTest {
 		prop.addListener(events::add);
 
 		assertEquals("1", prop.getCurrentValue());
-		assertNull("Listener should not be notified before a property actually changes", events.poll());
+		assertNull(events.poll(), "Listener should not be notified before a property actually changes");
 		secondSource.set("foo", "22");
-		assertNull("Listener should not be notfied when a property changes but resolved property has the same value", events.poll());
+		assertNull(events.poll(), "Listener should not be notified when a property changes but resolved property has the same value");
 
 		firstSource.set("foo", "11");
-		assertEquals("Listener should be notified when property resolved changes", "11", events.poll());
+		assertEquals( "11", events.poll(), "Listener should be notified when property resolved changes");
 
 		secondSource.set("foo", "11");
 		assertNull(events.poll());
 	}
 
 	@Test
-	public void propertyListenerSupport_IntType() throws Exception {
+	void propertyListenerSupport_IntType() {
 		firstSource.set("intProp", "1");
 		DynamicIntProperty prop = dynamicConfig.getIntProperty("intProp", 0);
 		Queue<Integer> events = new LinkedBlockingQueue<>();
 		prop.addListener(events::add);
 
 		assertEquals(1, prop.getCurrentValue().intValue());
-		assertNull("Listener should not be notified before a property actually changes", events.poll());
+		assertNull(events.poll(), "Listener should not be notified before a property actually changes");
 
 		firstSource.set("intProp", "11");
-		assertEquals("Listener should be notified when property resolved changes", Integer.valueOf(11), events.poll());
+		assertEquals(Integer.valueOf(11), events.poll(), "Listener should be notified when property resolved changes");
 	}
 
 	@Test
-	public void propertyListenerSupport_LongType() throws Exception {
+	void propertyListenerSupport_LongType() {
 		firstSource.set("longProp", "1");
 		DynamicLongProperty prop = dynamicConfig.getLongProperty("longProp", 0);
 		Queue<Long> events = new LinkedBlockingQueue<>();
 		prop.addListener(events::add);
 
 		assertEquals(1, prop.getCurrentValue().longValue());
-		assertNull("Listener should not be notified before a property actually changes", events.poll());
+		assertNull(events.poll(), "Listener should not be notified before a property actually changes");
 
 		firstSource.set("longProp", "11");
-		assertEquals("Listener should be notified when property resolved changes", Long.valueOf(11), events.poll());
+		assertEquals(Long.valueOf(11), events.poll(), "Listener should be notified when property resolved changes");
 	}
 
 	@Test
-	public void propertyListenerSupport_BooleanType() throws Exception {
+	void propertyListenerSupport_BooleanType() {
 		firstSource.set("booleanProp", "true");
 		DynamicBooleanProperty prop = dynamicConfig.getBooleanProperty("booleanProp", false);
 		Queue<Boolean> events = new LinkedBlockingQueue<>();
 		prop.addListener(events::add);
 
 		assertEquals(Boolean.TRUE, prop.getCurrentValue());
-		assertNull("Listener should not be notified before a property actually changes", events.poll());
+		assertNull(events.poll(), "Listener should not be notified before a property actually changes");
 
 		firstSource.set("booleanProp", "false");
-		assertEquals("Listener should be notified when property resolved changes", Boolean.FALSE, events.poll());
+		assertEquals(Boolean.FALSE, events.poll(), "Listener should be notified when property resolved changes");
 	}
 
 	@Test
-	public void globalPropertyListenerIsNotifiedWhenNewPropertyIsCreated() throws Exception {
+	void globalPropertyListenerIsNotifiedWhenNewPropertyIsCreated() {
 		firstSource.set("booleanProp", "true");
 		DynamicBooleanProperty prop = dynamicConfig.getBooleanProperty("booleanProp", false);
 		Queue<Boolean> events = new LinkedBlockingQueue<>();
 		prop.addListener(events::add);
 
 		assertEquals(Boolean.TRUE, prop.getCurrentValue());
-		assertNull("Listener should not be notified before a property actually changes", events.poll());
+		assertNull( events.poll(), "Listener should not be notified before a property actually changes");
 
 		firstSource.set("booleanProp", "false");
-		assertEquals("Listener should be notified when property resolved changes", Boolean.FALSE, events.poll());
+		assertEquals(Boolean.FALSE, events.poll(), "Listener should be notified when property resolved changes");
 	}
 
 	@Test
-	public void globalConfigListenerSupport_PropertyCreatedEvents() throws Exception {
+	void globalConfigListenerSupport_PropertyCreatedEvents() {
 		class Prop {
-			final String name;
-			final Object val;
-			public Prop(String name, Object val) {
+			private final String name;
+			private final Object val;
+			Prop(String name, Object val) {
 				this.name = name;
 				this.val = val;
 			}
@@ -406,11 +404,11 @@ public class DynamicConfigTest {
 	}
 
 	@Test
-	public void globalConfigListenerSupport_PropertyUpdateEvents() throws Exception {
+	void globalConfigListenerSupport_PropertyUpdateEvents() {
 		class Prop {
-			final String name;
-			final Object val;
-			public Prop(String name, Object val) {
+			private final String name;
+			private final Object val;
+			Prop(String name, Object val) {
 				this.name = name;
 				this.val = val;
 			}

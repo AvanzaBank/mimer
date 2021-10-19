@@ -13,7 +13,7 @@
 	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
 
@@ -57,7 +57,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
-					<version>1.6</version>
+					<version>3.0.1</version>
 					<executions>
 						<execution>
 							<id>sign-artifacts</id>
@@ -72,6 +72,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
 					<configuration>
 						<excludePackageNames>lunch*:se*:tutorial*:runners*:</excludePackageNames>
 						<aggregate>true</aggregate>
@@ -110,27 +111,27 @@
 
 		<java.version>8</java.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<junit.version>4.13.2</junit.version>
-		<hamcrest.version>1.3</hamcrest.version>
+		<junit-jupiter.version>5.8.1</junit-jupiter.version>
+		<hamcrest.version>2.2</hamcrest.version>
 		<lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
-		<maven-assembly-plugin.version>2.2.1</maven-assembly-plugin.version>
-		<maven-clean-plugin.version>2.5</maven-clean-plugin.version>
+		<maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
+		<maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>2.8.1</maven-deploy-plugin.version>
 		<maven-install-plugin.version>2.3.1</maven-install-plugin.version>
-		<maven-jar-plugin.version>2.3.1</maven-jar-plugin.version>
-		<maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
+		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+		<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
 		<maven-release-plugin.version>2.5.1</maven-release-plugin.version>
-		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		<maven-site-plugin.version>2.2</maven-site-plugin.version>
-		<maven-source-plugin.version>2.1.2</maven-source-plugin.version>
-		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+		<maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+		<maven-site-plugin.version>3.9.1</maven-site-plugin.version>
+		<maven-source-plugin.version>3.2.0</maven-source-plugin.version>
+		<maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
 		<versions-maven-plugin.version>2.5</versions-maven-plugin.version>
-		<maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
+		<maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
 		<license-maven-plugin.version>2.11</license-maven-plugin.version>
-		<maven-scm-plugin.version>1.4</maven-scm-plugin.version>
-		<maven-scm-publish-plugin.version>1.1</maven-scm-publish-plugin.version>
+		<maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
+		<maven-scm-publish-plugin.version>3.0.0</maven-scm-publish-plugin.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
@@ -147,33 +148,18 @@
 				<artifactId>slf4j-api</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-
-			<!-- Java 11 back-compatibility -->
-			<dependency>
-				<groupId>javax.annotation</groupId>
-				<artifactId>javax.annotation-api</artifactId>
-				<version>1.3.2</version>
-			</dependency>
 
 			<!-- TEST -->
 			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit-jupiter.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-library</artifactId>
-				<version>${hamcrest.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-core</artifactId>
+				<artifactId>hamcrest</artifactId>
 				<version>${hamcrest.version}</version>
 			</dependency>
 		</dependencies>

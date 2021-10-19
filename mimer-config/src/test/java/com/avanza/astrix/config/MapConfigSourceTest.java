@@ -15,23 +15,54 @@
  */
 package com.avanza.astrix.config;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
-public class MapConfigSourceTest {
+class MapConfigSourceTest {
 
 	@Test
-	public void shouldCreateFromMap() throws Exception {		
+	void shouldCreateFromMap() {
 		MapConfigSource source = MapConfigSource.of(new HashMap<String, Object>() {{
 			put("property1", "value1");
 			put("property2", "value2");
 		}});
+
 		assertThat(source.get("property1"), equalTo("value1"));
 		assertThat(source.get("property2"), equalTo("value2"));
 	}
-	
+
+	@Test
+	void shouldCreateFromSingleKeyValuePair() {
+		MapConfigSource source = MapConfigSource.of("property1", "value1");
+
+		assertThat(source.get("property1"), equalTo("value1"));
+		assertThat(source.get("property2"), nullValue());
+	}
+
+	@Test
+	void shouldCreateFromTwoKeyValuePairs() {
+		MapConfigSource source = MapConfigSource.of("property1", "value1",
+													"property2", "value2");
+
+		assertThat(source.get("property1"), equalTo("value1"));
+		assertThat(source.get("property2"), equalTo("value2"));
+	}
+
+	@Test
+	void shouldCreateFromThreeKeyValuePairs() {
+		MapConfigSource source = MapConfigSource.of("property1", "value1",
+													"property2", "value2",
+													"property3", "value3");
+
+		assertThat(source.get("property1"), equalTo("value1"));
+		assertThat(source.get("property2"), equalTo("value2"));
+		assertThat(source.get("property3"), equalTo("value3"));
+	}
+
 }

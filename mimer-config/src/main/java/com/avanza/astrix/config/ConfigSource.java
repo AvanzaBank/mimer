@@ -29,7 +29,7 @@ public interface ConfigSource {
 	 * Reads a property from this ConfigSource.
 	 *  
 	 * @param propertyName - The name of the property to read
-	 * @return The value of the given property, or null if this ConfigSource does not contain a value for the tiven property
+	 * @return The value of the given property, or null if this ConfigSource does not contain a value for the given property
 	 */
 	String get(String propertyName);
 	

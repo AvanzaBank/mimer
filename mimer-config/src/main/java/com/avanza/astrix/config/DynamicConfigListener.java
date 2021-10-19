@@ -32,19 +32,14 @@ public interface DynamicConfigListener {
 	 * {@link DynamicConfigSource} implementation.
 	 * 
 	 * Default implementation does nothing
-	 * 
-	 * @param newValue
 	 */
 	default void propertyChanged(String propertyName, Object newValue) {}
 	
 	/**
 	 * Invoked the first time a property with a given name is requested from
-	 * a {@link DynamicConfig} instance, i.e when it is created.
+	 * a {@link DynamicConfig} instance, i.e. when it is created.
 	 * 
 	 * Default implementation does nothing
-	 * 
-	 * @param propertyName
-	 * @param initialValue
 	 */
 	default void propertyCreated(String propertyName, Object initialValue) {}
 	

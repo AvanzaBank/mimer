@@ -8,10 +8,10 @@ The DynamicConfig framework provides core abstractions for configuration propert
 MapConfigSource configSource = new MapConfigSource();
 DynamicConfig config = DynamicConfig.create(configSource);
 
-// Read property from configuration and provide a default-value if non present.
+// Read property from configuration and provide a default-value if not present.
 DynamicBoolean fooProp = config.readBooleanProperty("foo", false);
 
-// Since "foo" is not set in configSource it will fallback to default
+// Since "foo" is not set in configSource it will fall back to default
 assertFalse(fooProp.get());
 
 // Update "foo" property in ConfigSource  
@@ -42,7 +42,7 @@ DynamicConfig config = DynamicConfig.create(source1, source2);
 
 DynamicBoolean fooProp = config.getBoolean("foo", false);
 
-// When property not present in any source it will fallback to default value
+// When property not present in any source it will fall back to default value
 assertFalse(fooProp.get());
 
 // When property is updated in source2 it is propagated to fooProp

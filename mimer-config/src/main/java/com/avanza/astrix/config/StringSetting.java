@@ -15,7 +15,7 @@
  */
 package com.avanza.astrix.config;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A Setting of String type, see {@link Setting} <p>
@@ -29,7 +29,7 @@ public class StringSetting implements Setting<String> {
 	private final String defaultValue;
 	
 	public StringSetting(String name, String defaultValue) {
-		this.name = Objects.requireNonNull(name);
+		this.name = requireNonNull(name);
 		this.defaultValue = defaultValue;
 	}
 
