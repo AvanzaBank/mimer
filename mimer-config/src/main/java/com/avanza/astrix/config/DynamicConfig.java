@@ -16,12 +16,14 @@
 package com.avanza.astrix.config;
 
 import static java.util.Collections.singletonList;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +42,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public final class DynamicConfig {
 
-	private final ConcurrentMap<String, DynamicProperty<?>> configCache = new ConcurrentHashMap<>();
+	private final ConcurrentMap<CacheKey<? extends DynamicProperty<?>>, DynamicProperty<?>> configCache = new ConcurrentHashMap<>();
 	private final List<DynamicConfigSource> configSources;
 	private final ListenerSupport<DynamicConfigListener> dynamicConfigListenerSupport = new ListenerSupport<>();
 
@@ -149,8 +151,8 @@ public final class DynamicConfig {
 	}
 
 	private <T, P extends DynamicProperty<T>> P getProperty(String name, Class<P> propertyType, T defaultValue, PropertyParser<T> propertyParser) {
-		return getOrCreate(propertyType.getSimpleName() + "." + name,
-				() -> bindPropertyToConfigurationSources(name, propertyType.getDeclaredConstructor().newInstance(), defaultValue, propertyParser));
+		return getOrCreate(propertyType, name, () ->
+				bindPropertyToConfigurationSources(name, propertyType.getDeclaredConstructor().newInstance(), defaultValue, propertyParser));
 	}
 
 	private <T, P extends DynamicProperty<T>> P bindPropertyToConfigurationSources(String name, P property, T defaultValue, PropertyParser<T> propertyParser) {
@@ -208,16 +210,43 @@ public final class DynamicConfig {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends DynamicProperty<?>> T getOrCreate(String key, Callable<T> objectFactory) {
-		return (T) configCache.computeIfAbsent(key, ignore -> {
+	private <T extends DynamicProperty<?>> T getOrCreate(Class<T> type, String name, Callable<T> objectFactory) {
+		return (T) configCache.computeIfAbsent(new CacheKey<>(type, name), key -> {
 			try {
-				return  objectFactory.call();
-			} catch(RuntimeException exception) {
+				return objectFactory.call();
+			} catch (RuntimeException exception) {
 				throw exception;
-			} catch(Exception exception) {
+			} catch (Exception exception) {
 				throw new RuntimeException(exception);
 			}
 		});
+	}
+
+	private static final class CacheKey<T> {
+		private final Class<T> type;
+		private final String name;
+
+		public CacheKey(Class<T> type, String name) {
+			this.type = requireNonNull(type);
+			this.name = name.intern();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (this == other) {
+				return true;
+			}
+			if (other == null || getClass() != other.getClass()) {
+				return false;
+			}
+			CacheKey<?> cacheKey = (CacheKey<?>) other;
+			return type.equals(cacheKey.type) && name.equals(cacheKey.name);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(type, name);
+		}
 	}
 
 }
