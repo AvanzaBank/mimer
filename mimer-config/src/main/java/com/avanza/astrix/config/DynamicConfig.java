@@ -103,6 +103,10 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicBooleanProperty.class, defaultValue, PropertyParser.BOOLEAN_PARSER);
 	}
 
+	public DynamicOptionalProperty<Boolean> getOptionalBooleanProperty(String name) {
+		return new DynamicOptionalProperty<>(getProperty(name, DynamicNullableBooleanProperty.class, null, PropertyParser.BOOLEAN_PARSER));
+	}
+
 	public DynamicLongProperty getLongProperty(String name, long defaultValue) {
 		return getProperty(name, DynamicLongProperty.class, defaultValue, PropertyParser.LONG_PARSER);
 	}
@@ -115,8 +119,8 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicIntProperty.class, defaultValue, PropertyParser.INT_PARSER);
 	}
 
-	public DynamicOptionalProperty<Integer> getOptionalIntProperty(String name) {
-		return new DynamicOptionalProperty<>(getProperty(name, DynamicNullableIntProperty.class, null, PropertyParser.INT_PARSER));
+	public DynamicOptionalProperty<Integer> getOptionalIntegerProperty(String name) {
+		return new DynamicOptionalProperty<>(getProperty(name, DynamicNullableIntegerProperty.class, null, PropertyParser.INT_PARSER));
 	}
 
 	@SuppressWarnings("unchecked")

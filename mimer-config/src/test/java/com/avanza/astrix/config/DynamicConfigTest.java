@@ -79,6 +79,19 @@ class DynamicConfigTest {
 	}
 
 	@Test
+	void optionalBooleanProperty() {
+		DynamicOptionalProperty<Boolean> optionalBooleanProperty = dynamicConfig.getOptionalBooleanProperty("foo");
+		assertFalse(optionalBooleanProperty.get().isPresent());
+
+		secondSource.set("foo", "true");
+		assertTrue(optionalBooleanProperty.get().isPresent());
+		assertTrue(optionalBooleanProperty.getCurrentValue());
+
+		firstSource.set("foo", "false");
+		assertFalse(optionalBooleanProperty.getCurrentValue());
+	}
+
+	@Test
 	void intProperty() {
 		DynamicIntProperty intProperty = dynamicConfig.getIntProperty("foo", 0);
 		assertEquals(0, intProperty.get());
@@ -91,15 +104,16 @@ class DynamicConfigTest {
 	}
 
 	@Test
-	void optionalIntProperty() {
-		DynamicOptionalProperty<Integer> optionalIntProperty = dynamicConfig.getOptionalIntProperty("foo");
-		assertFalse(optionalIntProperty.get().isPresent());
+	void optionalIntegerProperty() {
+		DynamicOptionalProperty<Integer> optionalIntegerProperty = dynamicConfig.getOptionalIntegerProperty("foo");
+		assertFalse(optionalIntegerProperty.get().isPresent());
 
 		secondSource.set("foo", "2");
-		assertEquals(2, optionalIntProperty.getCurrentValue());
+		assertTrue(optionalIntegerProperty.get().isPresent());
+		assertEquals(2, optionalIntegerProperty.getCurrentValue());
 
 		firstSource.set("foo", "1");
-		assertEquals(1, optionalIntProperty.getCurrentValue());
+		assertEquals(1, optionalIntegerProperty.getCurrentValue());
 	}
 
 	@Test
@@ -120,6 +134,7 @@ class DynamicConfigTest {
 		assertFalse(optionalLongProperty.get().isPresent());
 
 		secondSource.set("foo", Long.toString(Long.MAX_VALUE));
+		assertTrue(optionalLongProperty.get().isPresent());
 		assertEquals(Long.MAX_VALUE, optionalLongProperty.getCurrentValue());
 
 		firstSource.set("foo", Long.toString(Long.MIN_VALUE));

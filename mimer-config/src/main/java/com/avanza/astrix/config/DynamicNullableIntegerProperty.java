@@ -15,5 +15,5 @@
  */
 package com.avanza.astrix.config;
 
-final class DynamicNullableIntProperty extends AbstractDynamicProperty<Integer> {
+final class DynamicNullableIntegerProperty extends AbstractDynamicProperty<Integer> {
 }
