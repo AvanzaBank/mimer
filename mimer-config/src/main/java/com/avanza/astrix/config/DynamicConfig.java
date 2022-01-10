@@ -107,8 +107,16 @@ public final class DynamicConfig {
 		return getProperty(name, DynamicLongProperty.class, defaultValue, PropertyParser.LONG_PARSER);
 	}
 
+	public DynamicOptionalProperty<Long> getOptionalLongProperty(String name) {
+		return new DynamicOptionalProperty<>(getProperty(name, DynamicNullableLongProperty.class, null, PropertyParser.LONG_PARSER));
+	}
+
 	public DynamicIntProperty getIntProperty(String name, int defaultValue) {
 		return getProperty(name, DynamicIntProperty.class, defaultValue, PropertyParser.INT_PARSER);
+	}
+
+	public DynamicOptionalProperty<Integer> getOptionalIntProperty(String name) {
+		return new DynamicOptionalProperty<>(getProperty(name, DynamicNullableIntProperty.class, null, PropertyParser.INT_PARSER));
 	}
 
 	@SuppressWarnings("unchecked")

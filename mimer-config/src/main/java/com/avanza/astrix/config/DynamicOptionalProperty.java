@@ -52,4 +52,8 @@ public final class DynamicOptionalProperty<T> implements DynamicProperty<T>, Sup
 		return Optional.ofNullable(getCurrentValue());
 	}
 
+	@Override
+	public String toString() {
+		return delegate.toString();
+	}
 }
