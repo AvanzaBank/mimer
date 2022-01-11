@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 
 class DynamicConfigTest {
 
-
 	private final MapConfigSource firstSource = new MapConfigSource();
 	private final MapConfigSource secondSource = new MapConfigSource();
 	private final DynamicConfig dynamicConfig = new DynamicConfig(Arrays.asList(firstSource, secondSource));
@@ -80,6 +79,19 @@ class DynamicConfigTest {
 	}
 
 	@Test
+	void optionalBooleanProperty() {
+		DynamicOptionalProperty<Boolean> optionalBooleanProperty = dynamicConfig.getOptionalBooleanProperty("foo");
+		assertFalse(optionalBooleanProperty.get().isPresent());
+
+		secondSource.set("foo", "true");
+		assertTrue(optionalBooleanProperty.get().isPresent());
+		assertTrue(optionalBooleanProperty.getCurrentValue());
+
+		firstSource.set("foo", "false");
+		assertFalse(optionalBooleanProperty.getCurrentValue());
+	}
+
+	@Test
 	void intProperty() {
 		DynamicIntProperty intProperty = dynamicConfig.getIntProperty("foo", 0);
 		assertEquals(0, intProperty.get());
@@ -89,6 +101,44 @@ class DynamicConfigTest {
 
 		firstSource.set("foo", "1");
 		assertEquals(1, intProperty.get());
+	}
+
+	@Test
+	void optionalIntegerProperty() {
+		DynamicOptionalProperty<Integer> optionalIntegerProperty = dynamicConfig.getOptionalIntegerProperty("foo");
+		assertFalse(optionalIntegerProperty.get().isPresent());
+
+		secondSource.set("foo", "2");
+		assertTrue(optionalIntegerProperty.get().isPresent());
+		assertEquals(2, optionalIntegerProperty.getCurrentValue());
+
+		firstSource.set("foo", "1");
+		assertEquals(1, optionalIntegerProperty.getCurrentValue());
+	}
+
+	@Test
+	void longProperty() {
+		DynamicLongProperty longProperty = dynamicConfig.getLongProperty("foo", 0L);
+		assertEquals(0, longProperty.get());
+
+		secondSource.set("foo", Long.toString(Long.MAX_VALUE));
+		assertEquals(Long.MAX_VALUE, longProperty.get());
+
+		firstSource.set("foo", Long.toString(Long.MIN_VALUE));
+		assertEquals(Long.MIN_VALUE, longProperty.get());
+	}
+
+	@Test
+	void optionalLongProperty() {
+		DynamicOptionalProperty<Long> optionalLongProperty = dynamicConfig.getOptionalLongProperty("foo");
+		assertFalse(optionalLongProperty.get().isPresent());
+
+		secondSource.set("foo", Long.toString(Long.MAX_VALUE));
+		assertTrue(optionalLongProperty.get().isPresent());
+		assertEquals(Long.MAX_VALUE, optionalLongProperty.getCurrentValue());
+
+		firstSource.set("foo", Long.toString(Long.MIN_VALUE));
+		assertEquals(Long.MIN_VALUE, optionalLongProperty.getCurrentValue());
 	}
 
 	@Test
